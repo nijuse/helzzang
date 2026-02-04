@@ -1,0 +1,77 @@
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+target 'helzzang' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
+    )
+    
+    # Fix for RNReanimated build issues
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_NO_CONFIG=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_MOBILE=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_USE_LIBCPP=1'
+        
+        # Fix for Folly Coroutine header not found
+        config.build_settings['OTHER_CPLUSPLUSFLAGS'] ||= ['$(OTHER_CFLAGS)']
+        if config.build_settings['OTHER_CPLUSPLUSFLAGS'].is_a?(String)
+          config.build_settings['OTHER_CPLUSPLUSFLAGS'] = [config.build_settings['OTHER_CPLUSPLUSFLAGS']]
+        end
+        unless config.build_settings['OTHER_CPLUSPLUSFLAGS'].include?('-DFOLLY_CFG_NO_COROUTINES=1')
+          config.build_settings['OTHER_CPLUSPLUSFLAGS'] << '-DFOLLY_CFG_NO_COROUTINES=1'
+        end
+        
+        # Fix for Folly Time.h typedef redefinition error (clockid_t)
+        config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+        if target.name.include?('RCT-Folly') || target.name.include?('Folly')
+          # Define FOLLY_HAVE_CLOCK_GETTIME to prevent Folly from redefining clockid_t
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_HAVE_CLOCK_GETTIME=1'
+          unless config.build_settings['OTHER_CPLUSPLUSFLAGS'].include?('-DFOLLY_HAVE_CLOCK_GETTIME=1')
+            config.build_settings['OTHER_CPLUSPLUSFLAGS'] << '-DFOLLY_HAVE_CLOCK_GETTIME=1'
+          end
+        end
+      end
+    end
+    
+    # Fix for Hermes script phase warning
+    installer.pods_project.targets.each do |target|
+      target.build_phases.each do |phase|
+        if phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase) &&
+           phase.name == '[CP-User] [Hermes] Replace Hermes for the right configuration, if needed'
+          # Add output file to prevent running on every build
+          phase.output_paths ||= []
+          phase.output_paths << '$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/hermes.framework/hermes'
+          phase.always_out_of_date = false
+        end
+      end
+    end
+  end
+end
