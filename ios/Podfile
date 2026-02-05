@@ -15,10 +15,21 @@ if linkage != nil
 end
 
 target 'helzzang' do
-  config = use_native_modules!
+  begin
+    config = use_native_modules!
+    react_native_path = config && config[:reactNativePath] ? config[:reactNativePath] : nil
+  rescue => e
+    Pod::UI.warn "use_native_modules! failed: #{e.message}"
+    react_native_path = nil
+  end
+  
+  # Fallback if use_native_modules! returns nil or fails
+  if react_native_path.nil?
+    react_native_path = File.dirname(`node --print "require.resolve('react-native/package.json')"`.strip)
+  end
 
   use_react_native!(
-    :path => config[:reactNativePath],
+    :path => react_native_path,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -26,7 +37,7 @@ target 'helzzang' do
   post_install do |installer|
     react_native_post_install(
       installer,
-      config[:reactNativePath],
+      react_native_path,
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
