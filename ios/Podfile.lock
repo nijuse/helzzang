@@ -6,16 +6,8 @@ PODS:
   - fmt (11.0.2)
   - glog (0.3.5)
   - hermes-engine (0.82.0):
-    - hermes-engine/cdp (= 0.82.0)
-    - hermes-engine/Hermes (= 0.82.0)
-    - hermes-engine/inspector (= 0.82.0)
-    - hermes-engine/inspector_chrome (= 0.82.0)
-    - hermes-engine/Public (= 0.82.0)
-  - hermes-engine/cdp (0.82.0)
-  - hermes-engine/Hermes (0.82.0)
-  - hermes-engine/inspector (0.82.0)
-  - hermes-engine/inspector_chrome (0.82.0)
-  - hermes-engine/Public (0.82.0)
+    - hermes-engine/Pre-built (= 0.82.0)
+  - hermes-engine/Pre-built (0.82.0)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -2416,6 +2408,34 @@ PODS:
     - React-perflogger (= 0.82.0)
     - React-utils (= 0.82.0)
     - SocketRocket
+  - ReactNativeGetLocation (6.0.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNVectorIcons (10.3.0):
     - boost
     - DoubleConversion
@@ -2522,6 +2542,7 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - ReactNativeGetLocation (from `../node_modules/react-native-get-location`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - SocketRocket (~> 0.7.1)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -2678,6 +2699,8 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativeGetLocation:
+    :path: "../node_modules/react-native-get-location"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
   Yoga:
@@ -2690,7 +2713,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 41b4dd99afd0aad861444ee141abdedaa6c3d238
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
-  hermes-engine: 763eb969cf7921cef0f596b0dfdd2ed4c800c4ac
+  hermes-engine: 8642d8f14a548ab718ec112e9bebdfdd154138b5
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: 22bf66112da540a7d40e536366ddd8557934fca1
   RCTRequired: a0ed4dc41b35f79fbb6d8ba320e06882a8c792cf
@@ -2757,10 +2780,11 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: c5c4f5280e4ae0f9f4a739c64c4260fe0b3edaf1
   ReactCodegen: 374f1c9242fbdd673b460d358b33860c0cc9d926
   ReactCommon: 25c7f94aee74ddd93a8287756a8ac0830a309544
+  ReactNativeGetLocation: b3796c5629deb287672b60edbf2553e266a893b6
   RNVectorIcons: 791f13226ec4a3fd13062eda9e892159f0981fae
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: edeb9900b9e5bb5b27b9a6a2d5914e4fe4033c1b
 
 PODFILE CHECKSUM: c2812d4007de0f9a9355e69e6af6e7ec5d90005f
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
