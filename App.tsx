@@ -5,19 +5,20 @@
  * @format
  */
 
-import { Button, Icon, Text, ThemeProvider } from '@rneui/themed';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import { Header, Input, ThemeProvider, Icon, Button } from '@rneui/themed';  
+import { StatusBar, StyleSheet, useColorScheme, View, Pressable } from 'react-native';
 import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
+  SafeAreaProvider, 
 } from 'react-native-safe-area-context';
+import { theme } from './themed'
+import { useState } from 'react';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider>
+      <ThemeProvider theme={theme}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         <AppContent />
       </ThemeProvider>
@@ -26,20 +27,32 @@ function App() {
 }
 
 function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   return (
-    <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
-      <Text h3 style={styles.title}>
-        helzzang
-      </Text>
-      <Text style={styles.subtitle}>
-        React Native Elements가 연결되었습니다.
-      </Text>
-      <Button title="시작하기" />
-      <View style={styles.iconRow}>
-        <Icon name="rocket" type="font-awesome" />
-        <Text style={styles.iconText}>아이콘 폰트 로드 완료</Text>
+    <View style={[styles.container]} >
+      <Header
+        style={styles.header}
+        containerStyle={styles.headerContainer}
+        // leftComponent={<Image source={require('./assets/images/logo.png')} style={styles.headerLogo} />}
+        rightComponent={
+          <Pressable onPress={() => {}}>
+            <Icon type="material" iconProps={{ name: "menu" }} />
+          </Pressable>
+        }
+      />
+      <View style={styles.contents}>
+        <Input 
+          placeholder="검색어를 입력하세요" 
+          rightIcon={<Icon type="material" iconProps={{ name: "search" }} />}
+          containerStyle={styles.inputContainer}
+        />
+        <View style={styles.buttonContainer}>
+          <Button title="SIMPLE" type="outline"  />
+          <Button title="BUTTON" type="outline"  />
+          <Button title="GROUP" type="outline"  />
+        </View>
       </View>
     </View>
   );
@@ -48,24 +61,52 @@ function AppContent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
-    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+      boxSizing: 'border-box',
   },
-  title: {
-    marginBottom: 8,
+  header: {
+    padding: 24,
+    height: 60,
   },
-  subtitle: {
-    marginBottom: 16,
+  headerContainer: {
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
-  iconRow: {
-    marginTop: 16,
+  headerLogo: {
+    width:140,
+    height: 40,
+  },
+  contents: {
+    flex: 1,
+    padding: 24,
+    width: '100%',
+    height: '100%',
+    justifyContent:  'flex-start',
+    alignItems: 'flex-start',
+  },
+  inputContainer: {
+    marginHorizontal: 0,
+    paddingHorizontal: 0,
+  },
+  buttonContainer: {
+    flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
+    gap: 1,
+    width: '100%',
   },
   iconText: {
     fontSize: 14,
   },
+
 });
 
 export default App;
