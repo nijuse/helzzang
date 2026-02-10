@@ -2,7 +2,7 @@ import { Image, Button, Text } from '@rneui/themed';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
 import GetLocation, { Location } from 'react-native-get-location';
-import axios from 'axios';
+import { useGymList } from '../hooks/useGymList';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
@@ -20,29 +20,12 @@ const HomeScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [location, setLocation] = useState<Location | null>(defaultLocation);
-  const [gymList, setGymList] = useState<any[]>([]);
 
   /**
-   * 헬스장 목록 호출
+   * 헬스장 목록 조회 (TanStack Query 캐싱)
+   * queryKey에 lat/lng 포함 → 같은 위치면 캐시 사용
    */
-  const getGymList = async () => {
-    if (location) {
-      try {
-        const { data } = await axios.get(
-          `https://apiwoondocv1.woondoc.com/search/gym/?lat=${location.latitude}&lng=${location.longitude}&bound=100&type=0`,
-          // `https://apiwoondocv1.woondoc.com/search/gym/?lat=${37.5715}&lng=${126.9768}&bound=100&type=0`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-        setGymList(data);
-      } catch {
-        setGymList([]);
-      }
-    }
-  };
+  const { data: gymList = [] } = useGymList(location);
 
   /**
    * 위치 권한 요청
@@ -59,12 +42,7 @@ const HomeScreen = () => {
       },
     })
       .then(newLocation => {
-        setLocation(newLocation);
-        if (newLocation) {
-          getGymList();
-        } else {
-          setGymList([]);
-        }
+        setLocation(newLocation ?? defaultLocation);
       })
       .catch(() => setLocation(defaultLocation));
   };
@@ -114,7 +92,7 @@ const HomeScreen = () => {
         </View>
         {gymList.length > 0 && (
           <View style={{ width: '100%' }}>
-            {gymList.map(gym => (
+            {gymList.map((gym: any) => (
               <View
                 key={gym.id}
                 style={{
@@ -186,17 +164,6 @@ const styles = StyleSheet.create({
   header: {
     padding: 24,
     height: 60,
-  },
-  headerContainer: {
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
   },
   headerLogo: {
     width: 140,
