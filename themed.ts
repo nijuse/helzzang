@@ -21,7 +21,7 @@ export const theme = createTheme({
         return {
           buttonStyle: {
             ...baseStyle,
-            backgroundColor: 'transparent',
+            backgroundColor: '#fff',
             borderColor: '#E0E0E0',
             borderWidth: 1,
           },
@@ -32,7 +32,7 @@ export const theme = createTheme({
             backgroundColor: theme.colors.primary,
           },
           disabledStyle: {
-            backgroundColor: 'transparent',
+            backgroundColor: '#fff',
             borderColor: '#E0E0E0',
             opacity: 0.5,
           },
@@ -43,7 +43,7 @@ export const theme = createTheme({
         return {
           buttonStyle: {
             ...baseStyle,
-            backgroundColor: 'transparent',
+            backgroundColor: '#fff',
           },
           titleStyle: {
             color: theme.colors.primary,
