@@ -2,14 +2,16 @@ import { Image, Button, Text } from '@rneui/themed';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
 import GetLocation, { Location } from 'react-native-get-location';
-import { useGymList } from '../hooks/useGymList';
+import useGymList from '../hooks/useGymList';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
+import { isInsideKorea } from '../utils/location';
 
+// 강남역
 const defaultLocation = {
-  longitude: 127.0306456,
-  latitude: 37.4993136,
+  longitude: 127.027621,
+  latitude: 37.497942,
   altitude: 0,
   accuracy: 0,
   speed: 0,
@@ -19,19 +21,17 @@ const defaultLocation = {
 const HomeScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [location, setLocation] = useState<Location | null>(defaultLocation);
+  const [location, setLocation] = useState<Location | null>(null);
 
   /**
    * 헬스장 목록 조회 (TanStack Query 캐싱)
    * queryKey에 lat/lng 포함 → 같은 위치면 캐시 사용
    */
-  const { data: gymList = [] } = useGymList(location);
-
+  const { data: gymList } = useGymList(location);
   /**
-   * 위치 권한 요청
+   * 위치 권한 요청 (location을 null로 바꾸지 않음 → 쿼리 비활성화 방지, 데이터 갱신 반영)
    */
   const requestLocation = () => {
-    setLocation(null);
     GetLocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 30000,
@@ -42,7 +42,11 @@ const HomeScreen = () => {
       },
     })
       .then(newLocation => {
-        setLocation(newLocation ?? defaultLocation);
+        if (isInsideKorea(newLocation.latitude, newLocation.longitude)) {
+          setLocation(newLocation);
+        } else {
+          setLocation(defaultLocation);
+        }
       })
       .catch(() => setLocation(defaultLocation));
   };
@@ -90,7 +94,7 @@ const HomeScreen = () => {
             onPress={() => navigation.push('AIComparison')}
           />
         </View>
-        {gymList.length > 0 && (
+        {gymList && gymList.length > 0 && (
           <View style={{ width: '100%' }}>
             {gymList.map((gym: any) => (
               <View
