@@ -1,27 +1,18 @@
 import { Image, Button, Text } from '@rneui/themed';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { useEffect, useState } from 'react';
-import GetLocation, { Location } from 'react-native-get-location';
+import { useEffect } from 'react';
+import GetLocation from 'react-native-get-location';
 import useGymList from '../hooks/useGymList';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
 import { isInsideKorea } from '../utils/location';
-
-// 강남역
-const defaultLocation = {
-  longitude: 127.027621,
-  latitude: 37.497942,
-  altitude: 0,
-  accuracy: 0,
-  speed: 0,
-  time: 0,
-};
+import { useStore } from '../store';
 
 const HomeScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [location, setLocation] = useState<Location | null>(null);
+  const { location, setLocation, getDefaultLocation } = useStore();
 
   /**
    * 헬스장 목록 조회 (TanStack Query 캐싱)
@@ -45,10 +36,10 @@ const HomeScreen = () => {
         if (isInsideKorea(newLocation.latitude, newLocation.longitude)) {
           setLocation(newLocation);
         } else {
-          setLocation(defaultLocation);
+          setLocation(getDefaultLocation());
         }
       })
-      .catch(() => setLocation(defaultLocation));
+      .catch(() => setLocation(getDefaultLocation()));
   };
 
   /**
