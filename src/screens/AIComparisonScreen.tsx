@@ -12,6 +12,14 @@ import { useStore } from '../store';
 import axios from 'axios';
 
 const TAVILY_SEARCH_URL = 'https://api.tavily.com/search';
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+
+/**
+ * 참고: Velog "localhost API 호출 오류" 글은
+ * "앱 → 개발 PC의 백엔드(localhost:3000)" 호출 시의 이야기입니다.
+ * 지금은 외부 API(api.groq.com) 호출이라 localhost 이슈와는 무관합니다.
+ * TAVILY(api.tavily.com)는 되고 Groq만 안 되면, 기기/네트워크에서 api.groq.com만 차단되는 경우일 수 있습니다.
+ */
 
 const AIComparisonScreen = () => {
   const location = useStore(state => state.location);
@@ -58,27 +66,36 @@ const AIComparisonScreen = () => {
       const gymNames = gymList.slice(0, 10).map((g: any) => g.name);
       const searchData = await fetchGymWebInfo(gymNames);
 
-      const prompt = `
-        너는 헬스장 추천 전문가야. 아래 데이터를 바탕으로 가성비 좋은 곳 하나를 추천해줘.
-        
-        1. 목록: ${JSON.stringify(gymList.slice(0, 10))}
-        2. 실시간 정보: ${JSON.stringify(searchData)}
-      `;
+      // prompt 길이 제한 (Groq API는 토큰 제한이 있음)
+      const searchDataText = searchData
+        ? searchData
+            .map((r: any) => `${r.content} - ${r.url}`)
+            .join('\n')
+            .substring(0, 2000)
+        : '';
 
-      // Groq API 호출 (TAVILY와 동일한 axios 방식 사용)
-      if (!GROQ_API_KEY || GROQ_API_KEY === 'undefined') {
-        setResult(
-          'Groq API 키가 없습니다. .env에 GROQ_API_KEY를 설정한 뒤 앱을 다시 빌드해주세요.',
-        );
-        return;
-      }
+      const prompt = `너는 헬스장 추천 전문가야. 아래 데이터를 바탕으로 가성비 좋은 곳 하나를 추천해줘.
+
+      1. 헬스장 목록:
+      ${gymList
+        .slice(0, 10)
+        .map((g: any) => `- ${g.name} (위치: ${g.address || '정보 없음'})`)
+        .join('\n')}
+
+      2. 실시간 정보:
+      ${searchDataText || '추가 정보 없음'}`;
+
+      console.log('Groq API 호출 시작, prompt 길이:', prompt.length);
+      console.log('API 키 확인:', GROQ_API_KEY.substring(0, 10) + '...');
+      console.log('Groq URL:', GROQ_API_URL);
 
       const { data: resultData } = await axios.post(
-        'https://api.groq.com/openai/v1/chat/completions',
+        GROQ_API_URL,
         {
-          model: 'llama-3.1-70b-versatile',
+          model: 'llama-3.1-8b-instant',
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.7,
+          max_tokens: 3000,
         },
         {
           headers: {
@@ -93,16 +110,19 @@ const AIComparisonScreen = () => {
       if (text) setResult(text);
       else setResult('분석 결과를 생성하지 못했습니다.');
     } catch (e: any) {
+      const status = e?.status || e?.response?.status;
+      const errorData = e?.response?.data;
+      const groqError = errorData?.error;
+
       console.error('Groq 호출 에러 상세:', {
         message: e?.message,
         name: e?.name,
         code: e?.code,
-        response: e?.response,
-        status: e?.status || e?.response?.status,
+        status: status,
+        groqError: groqError,
+        fullError: errorData,
       });
 
-      const status = e?.status || e?.response?.status;
-      const body = e?.response?.data;
       const isNetworkError =
         e?.message === 'Network request failed' ||
         e?.message === 'Network Error' ||
@@ -110,12 +130,34 @@ const AIComparisonScreen = () => {
         e?.code === 'NETWORK_ERROR' ||
         e?.message?.includes('Network');
 
-      console.error('Groq 호출 에러:', body ?? e?.response?.data ?? e);
-      setResult(
-        isNetworkError
-          ? '네트워크 연결을 확인해주세요. (와이파이/케이블, VPN 해제 후 재시도)'
-          : '분석 중 오류가 발생했습니다. API 키와 할당량을 확인해주세요.',
-      );
+      let errorMessage = '';
+      if (isNetworkError) {
+        errorMessage =
+          'Groq API 연결 실패. iOS 시뮬레이터에서 먼저 테스트해보고, 실기기라면 다른 Wi‑Fi·핫스팟으로 시도해보세요. (VPN 해제)';
+      } else if (status === 400) {
+        // Groq API의 실제 에러 메시지 표시
+        errorMessage =
+          groqError?.message ||
+          errorData?.message ||
+          '요청 형식이 올바르지 않습니다. API 키와 요청 내용을 확인해주세요.';
+        console.error(
+          'Groq 400 에러 상세:',
+          JSON.stringify(groqError || errorData),
+        );
+      } else if (status === 401) {
+        errorMessage =
+          'API 키가 유효하지 않습니다. .env 파일의 GROQ_API_KEY를 확인해주세요.';
+      } else if (status === 429) {
+        errorMessage =
+          'API 호출 한도가 초과되었습니다. 잠시 후 다시 시도해주세요.';
+      } else {
+        errorMessage =
+          groqError?.message ||
+          `분석 중 오류가 발생했습니다. (상태 코드: ${status || '알 수 없음'})`;
+      }
+
+      console.error('Groq 호출 에러:', errorData ?? e?.response?.data ?? e);
+      setResult(errorMessage);
     } finally {
       setLoading(false);
     }
