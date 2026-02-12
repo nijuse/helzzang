@@ -97,4 +97,50 @@ pod install
 
 ---
 
+## 5. AI API 네트워크 에러 (Info.plist 수정 후 반영 안 됨)
+
+**증상**
+- AI API 호출 시 네트워크 에러 발생
+- `Info.plist`에서 `NSAppTransportSecurity` 수정(API 도메인 예외 추가 등)을 했음에도 앱에서 계속 네트워크 에러
+
+**원인**
+- `Info.plist` 수정이 빌드 캐시 때문에 실제 앱에 반영되지 않음
+- `pod install`이나 일반적인 Clean & Rebuild만으로는 Xcode/시뮬레이터의 캐시가 완전히 갱신되지 않는 경우
+
+**시도했지만 해결되지 않았던 방법**
+- `pod install` 반복 실행
+- 일반적인 Clean & Rebuild
+
+**해결 절차** (아래 순서대로 진행)
+
+1. **CocoaPods 캐시 완전 삭제**
+   ```bash
+   pod cache clean --all
+   ```
+
+2. **Derived Data 삭제**
+   ```bash
+   rm -rf ~/Library/Developer/Xcode/DerivedData/helzzang-*
+   ```
+
+3. **Xcode 완전 종료** 후 다시 실행
+
+4. **Xcode에서 Clean Build Folder** (⇧⌘K)
+
+5. **재빌드 및 앱 실행**
+
+6. **Metro 번들러 재시작**
+   ```bash
+   bun start --reset-cache
+   ```
+
+**Info.plist 관련 참고**
+- 이 프로젝트에서는 AI API 호출을 위해 `NSAppTransportSecurity` 아래에 다음 도메인 예외가 설정됨:
+  - `generativelanguage.googleapis.com`
+  - `api.tavily.com`
+  - `api.groq.com`
+- `Info.plist`를 수정한 뒤에는 위와 같이 **캐시 삭제 → Derived Data 삭제 → Xcode Clean → 재빌드 → Metro 재시작**까지 진행해야 변경 사항이 반영됨.
+
+---
+
 *최종 업데이트: 2025년 2월 (React Native 0.82 기준)*

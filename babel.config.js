@@ -11,7 +11,12 @@ module.exports = {
         safe: false,
         allowUndefined: true,
         // 노출할 변수 명시 (없으면 번들에 안 들어갈 수 있음)
-        allowList: ['TVLY_API_KEY', 'GEMINI_API_KEY', 'KAKAO_REST_API_KEY'],
+        allowList: [
+          'TVLY_API_KEY',
+          'GEMINI_API_KEY',
+          'GROQ_API_KEY',
+          'KAKAO_REST_API_KEY',
+        ],
       },
     ],
   ],

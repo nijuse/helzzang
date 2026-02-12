@@ -28,10 +28,11 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+		<!-- 개발 중 임시로 모든 HTTPS 연결 허용 (프로덕션에서는 false로 변경 필요) -->
 		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSAllowsLocalNetworking</key>
 		<true/>
+		<!-- <key>NSAllowsLocalNetworking</key> -->
+		<!-- <true/> -->
 		<key>NSExceptionDomains</key>
 		<dict>
 			<key>generativelanguage.googleapis.com</key>
