@@ -1,6 +1,6 @@
-import { Image, Button, Text } from '@rneui/themed';
+import { Button } from '@rneui/themed';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import GetLocation from 'react-native-get-location';
 import useGymList from '../hooks/useGymList';
 import { useNavigation } from '@react-navigation/native';
@@ -8,17 +8,18 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
 import { isInsideKorea } from '../utils/location';
 import { useStore } from '../store';
+import GymList from '../components/GymList';
 
 const HomeScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { location, setLocation, getDefaultLocation } = useStore();
-
+  const [gymList, setGymList] = useState<any[]>([]);
   /**
    * 헬스장 목록 조회 (TanStack Query 캐싱)
    * queryKey에 lat/lng 포함 → 같은 위치면 캐시 사용
    */
-  const { data: gymList } = useGymList(location);
+  const { data } = useGymList(location);
   /**
    * 위치 권한 요청 (location을 null로 바꾸지 않음 → 쿼리 비활성화 방지, 데이터 갱신 반영)
    */
@@ -49,6 +50,21 @@ const HomeScreen = () => {
     requestLocation();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (data) {
+      setGymList(
+        data.map((gym: any) => ({
+          ...gym,
+          price: {
+            dayPass: [10000, 18000, 25000, 20000, 30000][
+              Math.floor(Math.random() * 5)
+            ].toLocaleString(),
+          },
+        })),
+      );
+    }
+  }, [data]);
+
   return (
     <View style={[styles.container]}>
       <ScrollView
@@ -78,71 +94,14 @@ const HomeScreen = () => {
             onPress={() => navigation.push('GymList', { filter: 'female' })}
           />
           <Button
-            title="헬스장 비교"
+            title="AI 추천 헬스장"
             type="outline"
             titleStyle={styles.buttonTitle}
             containerStyle={styles.button}
             onPress={() => navigation.push('AIComparison')}
           />
         </View>
-        {gymList && gymList.length > 0 && (
-          <View style={{ width: '100%' }}>
-            {gymList.map((gym: any) => (
-              <View
-                key={gym.id}
-                style={{
-                  paddingVertical: 20,
-                  alignItems: 'flex-start',
-                  flexDirection: 'row',
-                  width: '100%',
-                  height: 170,
-                  borderBottomWidth: 1,
-                  borderBottomColor: '#E0E0E0',
-                }}
-              >
-                <Image
-                  source={{ uri: gym.profile_image }}
-                  style={{
-                    width: 130,
-                    height: 130,
-                    flexShrink: 0,
-                    marginRight: 20,
-                    borderRadius: 8,
-                  }}
-                />
-                <View
-                  style={{
-                    flex: 1,
-                    height: '100%',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                      marginTop: 4,
-                    }}
-                  >
-                    {gym.name}
-                  </Text>
-                  <Text style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
-                    {gym.walk_distance}
-                  </Text>
-                  <View style={{ marginTop: 'auto', alignItems: 'flex-end' }}>
-                    <Text style={{ fontSize: 24, fontWeight: 'bold' }}>
-                      {[10000, 18000, 25000, 20000, 30000][
-                        Math.floor(Math.random() * 5)
-                      ].toLocaleString()}
-                      원
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
-        <View></View>
+        {gymList && gymList.length > 0 && <GymList data={gymList} />}
       </ScrollView>
     </View>
   );
@@ -154,10 +113,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     boxSizing: 'border-box',
-    backgroundColor: '#fff',
   },
   header: {
-    padding: 24,
     height: 60,
   },
   headerLogo: {
@@ -168,7 +125,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentsContainer: {
-    padding: 24,
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',

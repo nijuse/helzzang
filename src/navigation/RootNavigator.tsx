@@ -25,7 +25,12 @@ const GymListScreenWrapper = ({
 
 const RootNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        contentStyle: { backgroundColor: '#fff', padding: 24 },
+      }}
+    >
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="RecentlyViewed" component={RecentlyViewedScreen} />
       <Stack.Screen name="GymList" component={GymListScreenWrapper} />

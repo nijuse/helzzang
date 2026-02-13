@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 const RecentlyViewedScreen = () => {
   return (
-    <View>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <Text>RecentlyViewedScreen</Text>
     </View>
   );
