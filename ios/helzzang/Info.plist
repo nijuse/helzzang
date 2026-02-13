@@ -98,5 +98,10 @@
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>위치정보 권한이 필요합니다</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>nmap</string>
+		<string>kakaomap</string>
+	</array>
 </dict>
 </plist>

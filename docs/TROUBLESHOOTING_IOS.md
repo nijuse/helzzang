@@ -143,4 +143,52 @@ pod install
 
 ---
 
+## 6. [runtime not ready] Global was not installed (AppRegistryBinding::startSurface failed)
+
+**증상**
+- 앱 실행 시 빨간 화면: `[runtime not ready]: Error: Non-js exception: AppRegistryBinding::startSurface failed. Global was not installed.`
+- JS 번들이 완전히 로드되기 전에 네이티브가 화면을 띄우려다 실패하는 경우
+
+**원인**
+- Metro/Hermes 캐시 문제 또는 이전 빌드 잔여물
+- New Architecture(React Native 0.82) 환경에서 가끔 발생
+
+**해결 절차** (순서대로 진행)
+
+1. **Metro 종료**  
+   실행 중인 `bun start` / `npm start` 터미널에서 Ctrl+C
+
+2. **Metro·Watchman 캐시 삭제**
+   ```bash
+   cd /Users/pn090/Desktop/01_source/helzzang
+   rm -rf node_modules/.cache
+   watchman watch-del-all 2>/dev/null || true
+   bun start --reset-cache
+   ```
+   (Metro는 여기서 **띄워 둔 채** 다음 단계 진행)
+
+3. **다른 터미널에서 iOS 클린 빌드**
+   ```bash
+   cd /Users/pn090/Desktop/01_source/helzzang/ios
+   rm -rf build Pods Podfile.lock
+   export LANG=en_US.UTF-8
+   export LC_ALL=en_US.UTF-8
+   pod install
+   ```
+
+4. **Xcode DerivedData 삭제 후 재빌드**
+   ```bash
+   rm -rf ~/Library/Developer/Xcode/DerivedData/helzzang-*
+   ```
+   그 다음 **Xcode**에서 프로젝트 열고 Product → Clean Build Folder (⇧⌘K) 후 Run (⌘R).
+
+5. **시뮬레이터에 예전 앱이 있으면 삭제**  
+   시뮬레이터에서 helzzang 앱 아이콘 길게 누르기 → 앱 제거 후, Xcode에서 다시 Run.
+
+**그래도 안 되면**
+- Metro 터미널에서 **JS 쪽 에러 로그**가 먼저 찍혔는지 확인 (번들 로딩 중 예외가 나면 이 오류로 이어질 수 있음).
+- 일시적으로 New Architecture 끄기: `ios/helzzang/Info.plist`에서 `RCTNewArchEnabled`를 `false`로 바꾼 뒤 위 3~5단계 다시 진행.
+
+---
+
 *최종 업데이트: 2025년 2월 (React Native 0.82 기준)*
