@@ -9,3 +9,9 @@ export const DEFAULT_LOCATION: Location = {
   speed: 0,
   time: 0,
 };
+
+export const FILTERS: Record<string, string> = {
+  dayPass: '일일권',
+  membership: '회원권',
+  female: '여성전용',
+};
