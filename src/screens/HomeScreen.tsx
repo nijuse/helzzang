@@ -1,5 +1,5 @@
 import { Button } from '@rneui/themed';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, Image, Text } from 'react-native';
 import { useEffect, useState } from 'react';
 import GetLocation from 'react-native-get-location';
 import useGymList from '../hooks/useGymList';
@@ -8,7 +8,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
 import { isInsideKorea } from '../utils/location';
 import { useStore } from '../store';
-import GymList from '../components/GymList';
 
 const HomeScreen = () => {
   const navigation =
@@ -55,15 +54,12 @@ const HomeScreen = () => {
       setGymList(
         data.map((gym: any) => ({
           ...gym,
-          price: {
-            dayPass: [10000, 18000, 25000, 20000, 30000][
-              Math.floor(Math.random() * 5)
-            ].toLocaleString(),
-          },
+          profile_image: gym.profile_image || gym.gym_cover_images?.[0]?.url,
         })),
       );
     }
   }, [data]);
+  console.log('data', data);
 
   return (
     <View style={[styles.container]}>
@@ -101,7 +97,34 @@ const HomeScreen = () => {
             onPress={() => navigation.push('AIComparison')}
           />
         </View>
-        {gymList && gymList.length > 0 && <GymList data={gymList} />}
+        <View style={{ width: '100%', gap: 20 }}>
+          {gymList &&
+            gymList.length > 0 &&
+            gymList.map((gym: any) => (
+              <View key={gym.id} style={{ width: '100%', gap: 10 }}>
+                <Image
+                  source={{
+                    uri: gym?.profile_image,
+                  }}
+                  style={{
+                    width: '100%',
+                    height: 200,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: '#E0E0E0',
+                  }}
+                />
+                <View style={{ flexDirection: 'column', gap: 4 }}>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                    {gym.name}
+                  </Text>
+                  <Text style={{ fontSize: 12, color: '#666' }}>
+                    {gym.walk_distance} | {gym.address}
+                  </Text>
+                </View>
+              </View>
+            ))}
+        </View>
       </ScrollView>
     </View>
   );
