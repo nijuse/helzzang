@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import useGymList from '../hooks/useGymList';
 import GymList from '../components/GymList';
 import { useStore } from '../store';
@@ -12,7 +12,7 @@ const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
   const [gymList, setGymList] = useState<any[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>('');
 
-  const setDaypassGymList = (_data: any[]) => {
+  const setDayPassGymList = (_data: any[]) => {
     setGymList(
       _data
         .map((gym: any) => ({
@@ -41,22 +41,38 @@ const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
 
   useEffect(() => {
     if (data) {
-      setDaypassGymList(data);
+      setDayPassGymList(data);
     }
   }, [data]);
 
   useEffect(() => {
     if (selectedFilter === 'female') {
-      setDaypassGymList(gymList.filter((gym: any) => gym.for_women === true));
+      setDayPassGymList(gymList?.filter((gym: any) => gym?.for_women === true));
     } else if (selectedFilter === 'dayPass') {
-      setDaypassGymList(data);
+      setDayPassGymList(data);
+    } else if (selectedFilter === 'membership') {
+      const membershipGymList = (data || []).map((gym: any) => ({
+        ...gym,
+        gym_price_info: {
+          ...gym.gym_price_info,
+          sortedGymPrices:
+            gym?.gym_price_info?.gym_price_tables?.[0]?.gym_prices
+              ?.slice()
+              ?.filter(
+                (price: { times: number; price: number }) =>
+                  price.price > 10000,
+              )
+              .sort((a: any, b: any) => a.times - b.times) || [],
+        },
+      }));
+      setGymList(membershipGymList);
     }
   }, [selectedFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ScrollView style={{ position: 'relative' }}>
       <Dropdown
-        dropdownIconStyle={{ top: 14, right: 20 }}
+        dropdownIconStyle={styles.dropdownIcon}
         autoCloseOnSelect={true}
         selectedValue={selectedFilter}
         options={[
@@ -69,28 +85,14 @@ const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
         }
         primaryColor={'#2089dc'}
         checkboxControls={{ checkboxStyle: { display: 'none' } }}
-        dropdownStyle={{
-          borderRadius: 100,
-          borderColor: '#E0E0E0',
-          backgroundColor: '#fff',
-          paddingHorizontal: 18,
-          paddingVertical: 0,
-          height: 35,
-          minHeight: 35,
-          borderWidth: 1,
-        }}
-        labelStyle={{
-          fontSize: 14,
-          lineHeight: 20,
-        }}
+        dropdownStyle={styles.dropdown}
+        labelStyle={styles.dropdownLabel}
         listComponentStyles={{
           itemSeparatorStyle: {
             height: 1,
           },
         }}
-        dropdownContainerStyle={{
-          width: 110,
-        }}
+        dropdownContainerStyle={styles.dropdownContainer}
       />
       {gymList && gymList.length > 0 && (
         <GymList data={gymList} filter={selectedFilter} />
@@ -100,3 +102,24 @@ const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
 };
 
 export default GymListScreen;
+
+const styles = StyleSheet.create({
+  dropdown: {
+    borderRadius: 100,
+    borderColor: '#E0E0E0',
+    backgroundColor: '#fff',
+    paddingHorizontal: 18,
+    paddingVertical: 0,
+    height: 35,
+    minHeight: 35,
+    borderWidth: 1,
+  },
+  dropdownIcon: { top: 14, right: 20 },
+  dropdownLabel: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  dropdownContainer: {
+    width: 110,
+  },
+});

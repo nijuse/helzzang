@@ -37,29 +37,21 @@ const GymList = ({
                   </>
                 )}
               {filter === 'membership' &&
-                gym?.gym_price_info?.gym_price_tables?.[0]?.gym_prices?.length >
-                  0 &&
-                gym?.gym_price_info?.gym_price_tables?.[0]?.gym_prices
-                  ?.sort((a: any, b: any) => a.times - b.times)
-                  ?.map((price: any) => (
-                    <View
-                      key={price.times}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'baseline',
-                      }}
-                    >
-                      <Text style={{ width: 40, fontSize: 12, color: '#666' }}>
-                        {price.times}개월
-                      </Text>
-                      <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                        {price.price.toLocaleString()}원
-                      </Text>
-                    </View>
-                  ))}
+                gym?.gym_price_info?.sortedGymPrices?.map((price: any) => (
+                  <View
+                    key={price.times + price.price.toString()}
+                    style={styles.membershipPriceWrap}
+                  >
+                    <Text style={styles.membershipTimes}>
+                      {price.times}개월
+                    </Text>
+                    <Text style={styles.membershipPrice}>
+                      {price.price.toLocaleString()}원
+                    </Text>
+                  </View>
+                ))}
               {filter === 'membership' &&
-                !gym?.gym_price_info?.gym_price_tables?.[0]?.gym_prices
-                  ?.length && (
+                !gym?.gym_price_info?.sortedGymPrices?.length && (
                   <Text
                     style={{ fontSize: 16, fontWeight: 'bold', color: '#666' }}
                   >
@@ -124,5 +116,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
     marginRight: 4,
+  },
+  membershipPriceWrap: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  membershipTimes: { width: 40, fontSize: 12, color: '#666' },
+  membershipPrice: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
