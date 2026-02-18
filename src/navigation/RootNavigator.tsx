@@ -10,6 +10,7 @@ import HomeScreen from '../screens/HomeScreen';
 import RecentlyViewedScreen from '../screens/RecentlyViewedScreen';
 import GymListScreen from '../screens/GymListScreen';
 import AIComparisonScreen from '../screens/AIComparisonScreen';
+import { colors } from '../../themed';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -60,13 +61,13 @@ const RootNavigator = () => {
     <Stack.Navigator
       initialRouteName="Home"
       screenOptions={({ route }) => ({
-        contentStyle: { backgroundColor: '#fff', padding: 24 },
+        contentStyle: { backgroundColor: colors.white, padding: 24 },
         headerTitle: LogoHeader,
         headerTitleAlign: 'center',
         headerBackVisible: route.name !== 'Home',
         headerBackTitle: '',
         headerBackTitleVisible: false,
-        headerTintColor: '#E31E24',
+        headerTintColor: colors.primary,
       })}
     >
       <Stack.Screen name="Home" component={HomeScreen} />
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#000',
+    color: colors.black,
   },
 });
 

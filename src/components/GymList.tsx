@@ -1,74 +1,8 @@
-import { Image, View, Text, StyleSheet } from 'react-native';
+import { Image, View, Text } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import { FILTERS } from '../constants';
 
-const GymList = ({
-  data,
-  filter,
-}: {
-  data: any;
-  filter: keyof typeof FILTERS;
-}) => {
-  if (!data) return null;
-  return (
-    <View style={styles.container}>
-      {data?.map((gym: any) => (
-        <View key={gym.id} style={styles.itemWrap}>
-          <Image source={{ uri: gym.profile_image }} style={styles.image} />
-          <View style={styles.gymInfo}>
-            <Text style={styles.gymName}>{gym.name}</Text>
-            <Text
-              style={[
-                styles.gymDistance,
-                filter === 'membership' && { marginBottom: 4 },
-              ]}
-            >
-              {gym.walk_distance}
-            </Text>
-            <View style={styles.gymPriceWrap}>
-              {filter !== 'membership' &&
-                gym?.gym_price_info?.day_price >= 0 && (
-                  <>
-                    <Text style={{ width: 40, fontSize: 12, color: '#666' }}>
-                      일일권
-                    </Text>
-                    <Text style={styles.gymPrice}>
-                      {gym.gym_price_info.day_price.toLocaleString()}원
-                    </Text>
-                  </>
-                )}
-              {filter === 'membership' &&
-                gym?.gym_price_info?.sortedGymPrices?.map((price: any) => (
-                  <View
-                    key={price.times + price.price.toString()}
-                    style={styles.membershipPriceWrap}
-                  >
-                    <Text style={styles.membershipTimes}>
-                      {price.times}개월
-                    </Text>
-                    <Text style={styles.membershipPrice}>
-                      {price.price.toLocaleString()}원
-                    </Text>
-                  </View>
-                ))}
-              {filter === 'membership' &&
-                !gym?.gym_price_info?.sortedGymPrices?.length && (
-                  <Text
-                    style={{ fontSize: 16, fontWeight: 'bold', color: '#666' }}
-                  >
-                    가격 정보 없음
-                  </Text>
-                )}
-            </View>
-          </View>
-        </View>
-      ))}
-    </View>
-  );
-};
-
-export default GymList;
-
-const styles = StyleSheet.create({
+const useStyles = makeStyles(theme => ({
   container: {
     width: '100%',
   },
@@ -79,7 +13,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 170,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: theme.colors.greyOutline,
   },
   image: {
     width: 130,
@@ -100,7 +34,7 @@ const styles = StyleSheet.create({
   },
   gymDistance: {
     fontSize: 12,
-    color: '#666',
+    color: theme.colors.grey0,
     marginTop: 4,
   },
   gymPriceWrap: {
@@ -112,18 +46,79 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  gymPriceLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginRight: 4,
-  },
+  gymPriceLabel: { width: 40, fontSize: 12, color: theme.colors.grey0 },
   membershipPriceWrap: {
     flexDirection: 'row',
     alignItems: 'baseline',
   },
-  membershipTimes: { width: 40, fontSize: 12, color: '#666' },
   membershipPrice: {
     fontSize: 16,
     fontWeight: 'bold',
   },
-});
+  membershipNoPrice: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: theme.colors.grey0,
+  },
+}));
+
+const GymList = ({
+  data,
+  filter,
+}: {
+  data: any;
+  filter: keyof typeof FILTERS;
+}) => {
+  const styles = useStyles();
+
+  if (!data) return null;
+  return (
+    <View style={styles.container}>
+      {data?.map((gym: any) => (
+        <View key={gym.id} style={styles.itemWrap}>
+          <Image source={{ uri: gym.profile_image }} style={styles.image} />
+          <View style={styles.gymInfo}>
+            <Text style={styles.gymName}>{gym.name}</Text>
+            <Text
+              style={[
+                styles.gymDistance,
+                filter === 'membership' && { marginBottom: 4 },
+              ]}
+            >
+              {gym.walk_distance}
+            </Text>
+            <View style={styles.gymPriceWrap}>
+              {filter !== 'membership' &&
+                gym?.gym_price_info?.day_price >= 0 && (
+                  <>
+                    <Text style={styles.gymPriceLabel}>일일권</Text>
+                    <Text style={styles.gymPrice}>
+                      {gym.gym_price_info.day_price.toLocaleString()}원
+                    </Text>
+                  </>
+                )}
+              {filter === 'membership' &&
+                gym?.gym_price_info?.sortedGymPrices?.map((price: any) => (
+                  <View
+                    key={price.times + price.price.toString()}
+                    style={styles.membershipPriceWrap}
+                  >
+                    <Text style={styles.gymPriceLabel}>{price.times}개월</Text>
+                    <Text style={styles.membershipPrice}>
+                      {price.price.toLocaleString()}원
+                    </Text>
+                  </View>
+                ))}
+              {filter === 'membership' &&
+                !gym?.gym_price_info?.sortedGymPrices?.length && (
+                  <Text style={styles.membershipNoPrice}>가격 정보 없음</Text>
+                )}
+            </View>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+};
+
+export default GymList;

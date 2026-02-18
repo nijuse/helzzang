@@ -1,5 +1,5 @@
-import { Button } from '@rneui/themed';
-import { StyleSheet, View, ScrollView, Image, Text } from 'react-native';
+import { Button, makeStyles } from '@rneui/themed';
+import { View, ScrollView, Image, Text } from 'react-native';
 import { useEffect, useState } from 'react';
 import GetLocation from 'react-native-get-location';
 import useGymList from '../hooks/useGymList';
@@ -9,7 +9,56 @@ import { RootStackParamList } from '../navigation/RootNavigator';
 import { isInsideKorea } from '../utils/location';
 import { useStore } from '../store';
 
+const useStyles = makeStyles(theme => ({
+  container: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    boxSizing: 'border-box',
+  },
+  contents: {
+    flex: 1,
+  },
+  contentsContainer: {
+    width: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    width: '100%',
+    marginBottom: 20,
+  },
+  button: {
+    flexGrow: 1,
+    width: 'auto',
+  },
+  buttonTitle: {
+    fontSize: 12,
+  },
+  gymListContainer: {
+    width: '100%',
+    gap: 20,
+  },
+  gymItem: {
+    width: '100%',
+    gap: 10,
+  },
+  gymItemImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: theme.colors.greyOutline,
+  },
+  gymItemInfo: { flexDirection: 'column', gap: 4 },
+  gymItemInfo_name: { fontSize: 16, fontWeight: 'bold' },
+  gymItemInfo_distance: { fontSize: 12, color: theme.colors.grey0 },
+}));
+
 const HomeScreen = () => {
+  const styles = useStyles();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { location, setLocation, getDefaultLocation } = useStore();
@@ -59,7 +108,7 @@ const HomeScreen = () => {
       );
     }
   }, [data]);
-  console.log('data', data);
+  // console.log('data', data);
 
   return (
     <View style={[styles.container]}>
@@ -97,28 +146,20 @@ const HomeScreen = () => {
             onPress={() => navigation.push('AIComparison')}
           />
         </View>
-        <View style={{ width: '100%', gap: 20 }}>
+        <View style={styles.gymListContainer}>
           {gymList &&
             gymList.length > 0 &&
             gymList.map((gym: any) => (
-              <View key={gym.id} style={{ width: '100%', gap: 10 }}>
+              <View key={gym.id} style={styles.gymItem}>
                 <Image
                   source={{
                     uri: gym?.profile_image,
                   }}
-                  style={{
-                    width: '100%',
-                    height: 200,
-                    borderRadius: 10,
-                    borderWidth: 1,
-                    borderColor: '#E0E0E0',
-                  }}
+                  style={styles.gymItemImage}
                 />
-                <View style={{ flexDirection: 'column', gap: 4 }}>
-                  <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                    {gym.name}
-                  </Text>
-                  <Text style={{ fontSize: 12, color: '#666' }}>
+                <View style={styles.gymItemInfo}>
+                  <Text style={styles.gymItemInfo_name}>{gym.name}</Text>
+                  <Text style={styles.gymItemInfo_distance}>
                     {gym.walk_distance} | {gym.address}
                   </Text>
                 </View>
@@ -129,50 +170,5 @@ const HomeScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    boxSizing: 'border-box',
-  },
-  header: {
-    height: 60,
-  },
-  headerLogo: {
-    width: 140,
-    height: 40,
-  },
-  contents: {
-    flex: 1,
-  },
-  contentsContainer: {
-    width: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-  },
-  inputContainer: {
-    marginHorizontal: 0,
-    paddingHorizontal: 0,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 10,
-    width: '100%',
-    marginBottom: 20,
-  },
-  button: {
-    // flex: 1,
-    flexGrow: 1,
-    width: 'auto',
-  },
-  buttonTitle: {
-    fontSize: 12,
-  },
-  iconText: {
-    fontSize: 14,
-  },
-});
 
 export default HomeScreen;
