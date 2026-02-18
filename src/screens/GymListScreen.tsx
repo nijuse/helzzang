@@ -1,12 +1,36 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native';
+import { makeStyles } from '@rneui/themed';
 import useGymList from '../hooks/useGymList';
 import GymList from '../components/GymList';
 import { useStore } from '../store';
 import { FILTERS } from '../constants';
 import Dropdown from 'react-native-input-select';
+import { colors } from '../../themed';
+
+const useStyles = makeStyles(theme => ({
+  dropdown: {
+    borderRadius: 100,
+    borderColor: theme.colors.greyOutline,
+    backgroundColor: theme.colors.white,
+    paddingHorizontal: 18,
+    paddingVertical: 0,
+    height: 35,
+    minHeight: 35,
+    borderWidth: 1,
+  },
+  dropdownIcon: { top: 14, right: 20 },
+  dropdownLabel: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  dropdownContainer: {
+    width: 110,
+  },
+}));
 
 const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
+  const styles = useStyles();
   const { location } = useStore();
   const { data } = useGymList(location);
   const [gymList, setGymList] = useState<any[]>([]);
@@ -83,7 +107,7 @@ const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
         onValueChange={value =>
           setSelectedFilter(value as keyof typeof FILTERS)
         }
-        primaryColor={'#2089dc'}
+        primaryColor={colors.primary}
         checkboxControls={{ checkboxStyle: { display: 'none' } }}
         dropdownStyle={styles.dropdown}
         labelStyle={styles.dropdownLabel}
@@ -102,24 +126,3 @@ const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
 };
 
 export default GymListScreen;
-
-const styles = StyleSheet.create({
-  dropdown: {
-    borderRadius: 100,
-    borderColor: '#E0E0E0',
-    backgroundColor: '#fff',
-    paddingHorizontal: 18,
-    paddingVertical: 0,
-    height: 35,
-    minHeight: 35,
-    borderWidth: 1,
-  },
-  dropdownIcon: { top: 14, right: 20 },
-  dropdownLabel: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  dropdownContainer: {
-    width: 110,
-  },
-});

@@ -1,12 +1,16 @@
 import { createTheme } from '@rneui/themed';
 
-export const theme = createTheme({
+export const colors = {
+  primary: '#E31E24',
+  white: '#FFFFFF',
+  black: '#333333',
+  grey0: '#666666',
+  greyOutline: '#E0E0E0',
+} as const;
+
+const theme = createTheme({
   mode: 'light',
-  lightColors: {
-    primary: '#E31E24',
-    secondary: '#FFFFFF',
-    black: '#333333',
-  },
+  lightColors: colors,
   components: {
     Button: (props, theme) => {
       // type별 기본 스타일 설정
@@ -15,14 +19,13 @@ export const theme = createTheme({
         paddingHorizontal: 20,
         paddingVertical: 10,
       };
-
       // type에 따라 다른 스타일 적용
       if (props.type === 'outline') {
         return {
           buttonStyle: {
             ...baseStyle,
-            backgroundColor: '#fff',
-            borderColor: '#E0E0E0',
+            backgroundColor: theme.colors.white,
+            borderColor: theme.colors.greyOutline,
             borderWidth: 1,
           },
           titleStyle: {
@@ -32,8 +35,8 @@ export const theme = createTheme({
             backgroundColor: theme.colors.primary,
           },
           disabledStyle: {
-            backgroundColor: '#fff',
-            borderColor: '#E0E0E0',
+            backgroundColor: theme.colors.white,
+            borderColor: theme.colors.greyOutline,
             opacity: 0.5,
           },
         };
@@ -43,7 +46,7 @@ export const theme = createTheme({
         return {
           buttonStyle: {
             ...baseStyle,
-            backgroundColor: '#fff',
+            backgroundColor: theme.colors.white,
           },
           titleStyle: {
             color: theme.colors.primary,
@@ -53,7 +56,6 @@ export const theme = createTheme({
           },
         };
       }
-
       // 'solid' 타입 (기본값)
       return {
         buttonStyle: {
@@ -61,14 +63,14 @@ export const theme = createTheme({
           backgroundColor: theme.colors.primary,
         },
         titleStyle: {
-          color: theme.colors.secondary,
+          color: theme.colors.white,
         },
         activeStyle: {
           backgroundColor: theme.colors.primary,
           opacity: 0.8,
         },
         disabledStyle: {
-          backgroundColor: '#E0E0E0',
+          backgroundColor: theme.colors.greyOutline,
           opacity: 0.5,
         },
       };
@@ -83,15 +85,17 @@ export const theme = createTheme({
         borderWidth: 1,
         paddingHorizontal: 20,
         paddingVertical: 10,
-        backgroundColor: theme.colors.secondary,
+        backgroundColor: theme.colors.white,
         borderColor: theme.colors.primary,
         borderRadius: 100,
       },
     }),
-    Icon: (props, theme) => ({
-      iconProps: {
-        color: theme.colors.primary,
-      },
-    }),
+    // Icon: (props, theme) => ({
+    //   iconProps: {
+    //     color: theme.colors.primary,
+    //   },
+    // }),
   },
 });
+
+export default theme;
