@@ -1,4 +1,4 @@
-import { Button, makeStyles } from '@rneui/themed';
+import { Button, makeStyles, Skeleton } from '@rneui/themed';
 import { View, ScrollView, Image, Text } from 'react-native';
 import { useEffect, useState } from 'react';
 import GetLocation from 'react-native-get-location';
@@ -55,6 +55,32 @@ const useStyles = makeStyles(theme => ({
   gymItemInfo: { flexDirection: 'column', gap: 4 },
   gymItemInfo_name: { fontSize: 16, fontWeight: 'bold' },
   gymItemInfo_distance: { fontSize: 12, color: theme.colors.grey0 },
+  skeletonItem: {
+    width: '100%',
+    gap: 10,
+  },
+  skeletonImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    backgroundColor: '#e8e8e8',
+  },
+  skeletonInfo: { flexDirection: 'column', gap: 4 },
+  skeletonName: {
+    height: 16,
+    width: '60%',
+    borderRadius: 4,
+    backgroundColor: theme.colors.grey5,
+  },
+  skeletonDistance: {
+    height: 12,
+    width: '90%',
+    borderRadius: 4,
+    backgroundColor: theme.colors.grey5,
+  },
+  skeletonHighlight: {
+    backgroundColor: theme.colors.grey0,
+  },
 }));
 
 const HomeScreen = () => {
@@ -67,7 +93,7 @@ const HomeScreen = () => {
    * 헬스장 목록 조회 (TanStack Query 캐싱)
    * queryKey에 lat/lng 포함 → 같은 위치면 캐시 사용
    */
-  const { data } = useGymList(location);
+  const { data, isLoading } = useGymList(location);
   /**
    * 위치 권한 요청 (location을 null로 바꾸지 않음 → 쿼리 비활성화 방지, 데이터 갱신 반영)
    */
@@ -108,7 +134,6 @@ const HomeScreen = () => {
       );
     }
   }, [data]);
-  // console.log('data', data);
 
   return (
     <View style={[styles.container]}>
@@ -139,32 +164,58 @@ const HomeScreen = () => {
             onPress={() => navigation.push('GymList', { filter: 'female' })}
           />
           <Button
+            title="커뮤니티"
+            type="outline"
+            titleStyle={styles.buttonTitle}
+            containerStyle={styles.button}
+            onPress={() => navigation.push('Community')}
+          />
+          {/* <Button
             title="AI 추천 헬스장"
             type="outline"
             titleStyle={styles.buttonTitle}
             containerStyle={styles.button}
             onPress={() => navigation.push('AIComparison')}
-          />
+          /> */}
         </View>
         <View style={styles.gymListContainer}>
-          {gymList &&
-            gymList.length > 0 &&
-            gymList.map((gym: any) => (
-              <View key={gym.id} style={styles.gymItem}>
-                <Image
-                  source={{
-                    uri: gym?.profile_image,
-                  }}
-                  style={styles.gymItemImage}
-                />
-                <View style={styles.gymItemInfo}>
-                  <Text style={styles.gymItemInfo_name}>{gym.name}</Text>
-                  <Text style={styles.gymItemInfo_distance}>
-                    {gym.walk_distance} | {gym.address}
-                  </Text>
+          {isLoading
+            ? [1, 2, 3].map(i => (
+                <View key={`skeleton-${i}`} style={styles.skeletonItem}>
+                  <Skeleton
+                    style={styles.skeletonImage}
+                    skeletonStyle={styles.skeletonHighlight}
+                  />
+                  <View style={styles.skeletonInfo}>
+                    <Skeleton
+                      style={styles.skeletonName}
+                      skeletonStyle={styles.skeletonHighlight}
+                    />
+                    <Skeleton
+                      style={styles.skeletonDistance}
+                      skeletonStyle={styles.skeletonHighlight}
+                    />
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))
+            : gymList &&
+              gymList.length > 0 &&
+              gymList.map((gym: any) => (
+                <View key={gym.id} style={styles.gymItem}>
+                  <Image
+                    source={{
+                      uri: gym?.profile_image,
+                    }}
+                    style={styles.gymItemImage}
+                  />
+                  <View style={styles.gymItemInfo}>
+                    <Text style={styles.gymItemInfo_name}>{gym.name}</Text>
+                    <Text style={styles.gymItemInfo_distance}>
+                      {gym.walk_distance} | {gym.address}
+                    </Text>
+                  </View>
+                </View>
+              ))}
         </View>
       </ScrollView>
     </View>

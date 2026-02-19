@@ -24,40 +24,57 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>helzzang</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>Auth Callback</string>
+			<key>CFBundleRoleEditor</key>
+			<string>Editor</string>
+		</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>nmap</string>
+		<string>kakaomap</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<!-- 개발 중 임시로 모든 HTTPS 연결 허용 (프로덕션에서는 false로 변경 필요) -->
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
-		<!-- <key>NSAllowsLocalNetworking</key> -->
-		<!-- <true/> -->
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>generativelanguage.googleapis.com</key>
+			<key>api.groq.com</key>
 			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<false/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
 			</dict>
 			<key>api.tavily.com</key>
 			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<false/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
 			</dict>
-			<key>api.groq.com</key>
+			<key>generativelanguage.googleapis.com</key>
 			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<false/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
 			</dict>
 		</dict>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>위치정보 권한이 필요합니다</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UIAppFonts</key>
@@ -96,12 +113,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>위치정보 권한이 필요합니다</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>nmap</string>
-		<string>kakaomap</string>
-	</array>
 </dict>
 </plist>

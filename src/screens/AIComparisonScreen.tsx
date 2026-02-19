@@ -11,20 +11,40 @@ import {
 import { TVLY_API_KEY, GROQ_API_KEY } from '@env';
 import useGymList from '../hooks/useGymList';
 import { useStore } from '../store';
+import { colors } from '../../themed';
 import axios from 'axios';
 
 const TAVILY_SEARCH_URL = 'https://api.tavily.com/search';
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+
+/** 연속 API 호출 시 React Native 네트워크 스택 이슈 방지용 짧은 대기 */
+const delay = (ms: number) =>
+  new Promise<void>(resolve => setTimeout(resolve, ms));
 
 /** AI 추천 결과 구조화 타입 */
 type AIRecommendationResult = {
   gymName: string;
   reason: string;
   gymInfo: string;
+  gymAddress: string;
+  gymPhone: string;
+  gymHours: string;
+  gymRating: string;
   priceList: string;
   naverMapUrl?: string;
   kakaoMapUrl?: string;
 };
+
+/** AI가 객체로 반환한 필드를 화면용 문자열로 변환 (React 자식으로 객체 렌더 방지) */
+function toDisplayString(value: unknown): string {
+  if (value == null) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object' && value !== null) {
+    return Object.entries(value)
+      .map(([k, v]) => (v != null && v !== '' ? `${k}: ${v}` : k))
+      .join('\n');
+  }
+  return String(value);
+}
 
 /**
  * 참고: Groq API(api.groq.com)는 OpenAI 호환 형식을 사용합니다.
@@ -43,7 +63,7 @@ const AIComparisonScreen = () => {
     try {
       const query = `${gymNames.join(
         ', ',
-      )} \n위 헬스장들의 각 헬스장 별 일일권 금액, 회원권 금액, 주차 여부, 시설 후기를 찾아줘`;
+      )} \n위 헬스장들의 각 헬스장 별 일일권 금액, 회원권 금액, 주차 여부, 운영시간, 시설 후기를 찾아줘`;
       const { data } = await axios.post(
         TAVILY_SEARCH_URL,
         {
@@ -76,7 +96,11 @@ const AIComparisonScreen = () => {
     try {
       const gymNames = gymList.slice(0, 10).map((g: any) => g.name);
       const searchData = await fetchGymWebInfo(gymNames);
-      console.log('TAVILY >> ', searchData);
+      console.log('searchData', searchData);
+
+      // 연속 호출 시 RN 네트워크 에러 방지: 첫 요청 연결이 완전히 정리된 뒤 Groq 호출
+      await delay(400);
+
       // prompt 길이 제한 (OpenAI API는 토큰 제한이 있음)
       const searchDataText = searchData
         ? searchData
@@ -86,43 +110,73 @@ const AIComparisonScreen = () => {
         : '';
 
       const prompt = `너는 헬스장 추천 전문가야. 아래 데이터를 바탕으로 가성비 좋은 곳 하나만 추천해줘.
-반드시 아래 JSON 형식으로만 응답해줘. 다른 텍스트나 설명 없이 JSON만 출력해줘.
+      반드시 아래 JSON 형식으로만 응답해줘. 다른 텍스트나 설명 없이 JSON만 출력해줘.
 
-{
-  "gymName": "추천 헬스장 이름",
-  "reason": "추천 이유 (가성비, 시설, 위치 등)",
-  "gymInfo": "헬스장 정보 (시설, 주차 여부, 운영시간 등)",
-  "priceList": "가격 정보 (일일권, 회원권 등)",
-  "naverMapUrl": "네이버 지도 URL (https://map.naver.com 또는 https://naver.me 형식)",
-  "kakaoMapUrl": "카카오 지도 URL (https://map.kakao.com 또는 https://kakaomap.com 형식)"
-}
+      {
+        "gymName": "추천 헬스장 이름",
+        "reason": "추천 이유 (가성비, 시설, 위치 등)",
+        "gymInfo": "헬스장 정보 (시설, 주차 여부 등)",
+        "gymAddress": "헬스장 주소",
+        "gymPhone": "헬스장 전화번호",
+        "gymHours": "헬스장 운영시간",
+        "gymRating": "헬스장 평점",
+        "priceList": "가격 정보 (일일권, 회원권 등)",
+        "naverMapUrl": "네이버 지도 URL (https://map.naver.com 또는 https://naver.me 형식)",
+        "kakaoMapUrl": "카카오 지도 URL (https://map.kakao.com 또는 https://kakaomap.com 형식)"
+      }
 
-1. 헬스장 목록:
-${gymList
-  .slice(0, 10)
-  .map((g: any) => `- ${g.name} (위치: ${g.address || '정보 없음'})`)
-  .join('\n')}
+      1. 헬스장 목록:
+      ${gymList
+        .slice(0, 10)
+        .map((g: any) => `- ${g.name} (위치: ${g.address || '정보 없음'})`)
+        .join('\n')}
 
-2. 실시간 정보:
-${searchDataText || '추가 정보 없음'}`;
+      2. 실시간 정보:
+      ${searchDataText || '추가 정보 없음'}`;
 
-      const { data: resultData } = await axios.post(
-        GROQ_API_URL,
-        {
-          model: 'llama-3.3-70b-versatile',
-          messages: [{ role: 'user', content: prompt }],
-          temperature: 0.7,
-          max_tokens: 3000,
-          response_format: { type: 'json_object' },
+      // 연속 호출 시 연결 재사용 이슈 방지: Groq 전용 인스턴스 사용
+      const groqClient = axios.create({
+        baseURL: 'https://api.groq.com/openai/v1',
+        timeout: 60000,
+        headers: {
+          Authorization: `Bearer ${GROQ_API_KEY}`,
+          'Content-Type': 'application/json',
         },
-        {
-          headers: {
-            Authorization: `Bearer ${GROQ_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          timeout: 60000,
-        },
-      );
+      });
+
+      const groqPayload = {
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 3000,
+        response_format: { type: 'json_object' },
+      };
+
+      const maxRetries = 3;
+      let lastError: any;
+      let resultData: any;
+
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          const res = await groqClient.post('/chat/completions', groqPayload);
+          resultData = res.data;
+          lastError = null;
+          break;
+        } catch (err: any) {
+          lastError = err;
+          const isNetworkErr =
+            err?.code === 'ERR_NETWORK' ||
+            err?.message === 'Network Error' ||
+            err?.message === 'Network request failed';
+          if (isNetworkErr && attempt < maxRetries) {
+            await delay(1000 * attempt);
+            continue;
+          }
+          throw err;
+        }
+      }
+
+      if (lastError) throw lastError;
       console.log('Groq AI >> ', resultData);
       const text = resultData?.choices?.[0]?.message?.content ?? '';
       setErrorMessage('');
@@ -133,8 +187,12 @@ ${searchDataText || '추가 정보 없음'}`;
           const structured: AIRecommendationResult = {
             gymName: parsed.gymName ?? '',
             reason: parsed.reason ?? '',
-            gymInfo: parsed.gymInfo ?? '',
-            priceList: parsed.priceList ?? '',
+            gymInfo: toDisplayString(parsed.gymInfo ?? ''),
+            gymAddress: parsed.gymAddress ?? '',
+            gymPhone: parsed.gymPhone ?? '',
+            gymHours: parsed.gymHours ?? '',
+            gymRating: parsed.gymRating ?? '',
+            priceList: toDisplayString(parsed.priceList ?? ''),
             naverMapUrl: parsed.naverMapUrl,
             kakaoMapUrl: parsed.kakaoMapUrl,
           };
@@ -144,8 +202,14 @@ ${searchDataText || '추가 정보 없음'}`;
           setResult({
             gymName: '',
             reason: text,
+            gymAddress: '',
+            gymPhone: '',
+            gymHours: '',
+            gymRating: '',
             gymInfo: '',
             priceList: '',
+            naverMapUrl: '',
+            kakaoMapUrl: '',
           });
         }
       } else {
@@ -209,17 +273,19 @@ ${searchDataText || '추가 정보 없음'}`;
     if (gymList) {
       handleAnalyze();
     }
-  }, [gymList, handleAnalyze]);
+  }, [gymList]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <ScrollView style={styles.container}>
-      {/* <Text style={styles.title}>AI 헬스장 비교 분석</Text> */}
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={
+        loading ? styles.loadingContentContainer : undefined
+      }
+    >
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-          <Text style={styles.loadingText}>
-            실시간 정보를 수집하고 분석 중입니다...
-          </Text>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>최적의 헬스장을 찾고 있습니다</Text>
         </View>
       ) : (
         <View style={styles.resultContainer}>
@@ -227,30 +293,19 @@ ${searchDataText || '추가 정보 없음'}`;
             <Text style={styles.errorText}>{errorMessage}</Text>
           ) : result ? (
             <View style={styles.structuredResult}>
-              {result.gymName ? (
-                <>
-                  <Text style={styles.label}>추천 헬스장</Text>
-                  <Text style={styles.resultText}>{result.gymName}</Text>
-                </>
-              ) : null}
-              {result.reason ? (
-                <>
-                  <Text style={styles.label}>추천 이유</Text>
-                  <Text style={styles.resultText}>{result.reason}</Text>
-                </>
-              ) : null}
-              {result.gymInfo ? (
-                <>
-                  <Text style={styles.label}>헬스장 정보</Text>
-                  <Text style={styles.resultText}>{result.gymInfo}</Text>
-                </>
-              ) : null}
-              {result.priceList ? (
-                <>
-                  <Text style={styles.label}>가격 정보</Text>
-                  <Text style={styles.resultText}>{result.priceList}</Text>
-                </>
-              ) : null}
+              {Object.entries(result)
+                .filter(
+                  ([key]) =>
+                    key !== 'naverMapUrl' &&
+                    key !== 'kakaoMapUrl' &&
+                    result?.[key as keyof AIRecommendationResult] !== '',
+                )
+                .map(([key, value]) => (
+                  <View key={key}>
+                    <Text style={styles.label}>{key}</Text>
+                    <Text style={styles.resultText}>{value}</Text>
+                  </View>
+                ))}
               {(result.naverMapUrl || result.kakaoMapUrl) && (
                 <View style={styles.mapLinksRow}>
                   {result.naverMapUrl ? (
@@ -298,18 +353,29 @@ ${searchDataText || '추가 정보 없음'}`;
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
+  container: {
+    flex: 1,
+    height: '100%',
+    padding: 20,
+    backgroundColor: '#fff',
+  },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
   },
-  loadingContainer: { marginTop: 50, alignItems: 'center' },
-  loadingText: { marginTop: 10, color: '#666' },
+  loadingContentContainer: {
+    flexGrow: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: { marginTop: 20, color: '#666' },
   resultContainer: {
     padding: 15,
-    backgroundColor: '#f9f9f9',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#eee',
@@ -321,7 +387,7 @@ const styles = StyleSheet.create({
   },
   resultText: { fontSize: 16, lineHeight: 24, color: '#333' },
   label: {
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: '600',
     color: '#666',
     marginTop: 16,
