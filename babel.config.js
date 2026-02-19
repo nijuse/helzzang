@@ -16,6 +16,8 @@ module.exports = {
           'GEMINI_API_KEY',
           'GROQ_API_KEY',
           'KAKAO_REST_API_KEY',
+          'SUPABASE_URL',
+          'SUPABASE_ANON_KEY',
         ],
       },
     ],

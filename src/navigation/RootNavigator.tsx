@@ -10,6 +10,8 @@ import HomeScreen from '../screens/HomeScreen';
 import RecentlyViewedScreen from '../screens/RecentlyViewedScreen';
 import GymListScreen from '../screens/GymListScreen';
 import AIComparisonScreen from '../screens/AIComparisonScreen';
+import CommunityScreen from '../screens/community/CommunityScreen';
+import SignInScreen from '../screens/SignInScreen';
 import { colors } from '../../themed';
 
 export type RootStackParamList = {
@@ -17,6 +19,8 @@ export type RootStackParamList = {
   RecentlyViewed: undefined;
   GymList: { filter: 'dayPass' | 'membership' | 'female' };
   AIComparison: undefined;
+  Community: undefined;
+  SignIn: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -74,6 +78,8 @@ const RootNavigator = () => {
       <Stack.Screen name="RecentlyViewed" component={RecentlyViewedScreen} />
       <Stack.Screen name="GymList" component={GymListScreenWrapper} />
       <Stack.Screen name="AIComparison" component={AIComparisonScreen} />
+      <Stack.Screen name="Community" component={CommunityScreen} />
+      <Stack.Screen name="SignIn" component={SignInScreen} />
     </Stack.Navigator>
   );
 };
