@@ -6,6 +6,7 @@ import { RootStackParamList } from '../../navigation/RootNavigator';
 import { supabase } from '../../lib/supabase';
 import { makeStyles } from '@rneui/themed';
 import CommunityItem from '../../components/CommunityItem';
+import useCommunityPosts from '../../hooks/useCommunityPosts';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -45,7 +46,7 @@ const CommunityScreen = () => {
   const styles = useStyles();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
+  const { data } = useCommunityPosts();
   const handleWritePress = async () => {
     const {
       data: { session },
@@ -59,10 +60,20 @@ const CommunityScreen = () => {
   return (
     <View style={styles.wrapper}>
       <ScrollView style={styles.container}>
-        <CommunityItem />
-        <CommunityItem />
-        <CommunityItem />
-        <CommunityItem />
+        {data && data.length > 0 ? (
+          data.map((post: any) => (
+            <CommunityItem
+              key={post.id}
+              title={post.title}
+              content={post.content}
+              userName={post.userId}
+              createdAt={post.createdAt}
+              commentCount={0}
+            />
+          ))
+        ) : (
+          <Text>게시글이 없습니다.</Text>
+        )}
       </ScrollView>
 
       <Pressable
