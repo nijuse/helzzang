@@ -31,6 +31,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     return true
   }
+
+  // 구글 로그인 등 OAuth 콜백: helzzang://auth/callback?code=... 로 앱이 열릴 때
+  // 이 메서드가 없으면 URL이 React Native Linking으로 전달되지 않아 getInitialURL/url 이벤트가 동작하지 않음
+  func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+  ) -> Bool {
+    return RCTLinkingManager.application(app, open: url, options: options)
+  }
 }
 
 class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
