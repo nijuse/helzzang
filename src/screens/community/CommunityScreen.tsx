@@ -4,19 +4,28 @@ import { colors } from '../../../themed';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
+import { supabase } from '../../lib/supabase';
 
 const CommunityScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const handleWritePress = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) {
+      navigation.navigate('SignIn');
+    }
+    // 로그인된 경우: 추후 글쓰기 화면으로 이동 등 처리
+  };
+
   return (
     <View style={styles.container}>
       <Text>CommunityScreen</Text>
-
       <Pressable
         style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
-        onPress={() => {
-          navigation.navigate('SignIn');
-        }}
+        onPress={handleWritePress}
       >
         <Ionicons name="pencil" size={20} color={colors.white} />
         <Text style={styles.fabText}>글쓰기</Text>

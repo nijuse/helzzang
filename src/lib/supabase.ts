@@ -9,11 +9,14 @@ const supabaseAnonKey = SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
+    // 로그인 정보를 AsyncStorage에 저장해 앱을 껐다 켜도 세션 유지
     ...(Platform.OS !== 'web' ? { storage: AsyncStorage } : {}),
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
     lock: processLock,
+    // 모바일: 리다이렉트 시 hash(#)가 빠지는 경우가 많아, code를 쿼리로 받는 PKCE 사용
+    ...(Platform.OS !== 'web' ? { flowType: 'pkce' as const } : {}),
   },
 });
 

@@ -1,150 +1,117 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Image, StyleSheet, Alert, Linking } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Image,
+  StyleSheet,
+  Linking,
+  AppState,
+  AppStateStatus,
+} from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button } from '@rneui/themed';
 import { supabase } from '../lib/supabase';
+import { handleAuthCallbackUrl } from '../lib/authCallback';
 import { colors } from '../../themed';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 
 /**
  * OAuth 콜백 URL (Supabase 대시보드 > Authentication > URL Configuration 에
  * Redirect URLs에 helzzang://auth/callback 추가 필요)
+ * 콜백 처리 및 로그인 후 Community 이동은 App.tsx + 여기 포커스 폴백으로 처리
  */
 const getRedirectUrl = () => {
   return 'helzzang://auth/callback';
 };
 
-/**
- * 콜백 URL에서 access_token, refresh_token 추출 후 세션 설정
- * Supabase는 hash fragment (#access_token=...) 또는 query parameter (?access_token=...)로 토큰을 전달할 수 있음
- */
-const parseSessionFromUrl = (
-  url: string,
-): { access_token: string; refresh_token: string } | null => {
-  try {
-    console.log('📥 받은 URL:', url);
-
-    // hash fragment에서 파싱 시도 (#access_token=...)
-    const hashIndex = url.indexOf('#');
-    if (hashIndex !== -1) {
-      const fragment = url.substring(hashIndex + 1);
-      const params: Record<string, string> = {};
-      fragment.split('&').forEach(part => {
-        const eq = part.indexOf('=');
-        if (eq === -1) return;
-        const key = decodeURIComponent(part.slice(0, eq));
-        const value = decodeURIComponent(part.slice(eq + 1));
-        if (key && value) params[key] = value;
-      });
-
-      if (params.access_token && params.refresh_token) {
-        return {
-          access_token: params.access_token,
-          refresh_token: params.refresh_token,
-        };
-      }
-    }
-
-    // query parameter에서 파싱 시도 (?access_token=...)
-    const queryIndex = url.indexOf('?');
-    if (queryIndex !== -1) {
-      const query = url.substring(queryIndex + 1).split('#')[0]; // hash가 있으면 제거
-      const params: Record<string, string> = {};
-      query.split('&').forEach(part => {
-        const eq = part.indexOf('=');
-        if (eq === -1) return;
-        const key = decodeURIComponent(part.slice(0, eq));
-        const value = decodeURIComponent(part.slice(eq + 1));
-        if (key && value) params[key] = value;
-      });
-
-      if (params.access_token && params.refresh_token) {
-        console.log('✅ 토큰 발견 (query parameter)');
-        return {
-          access_token: params.access_token,
-          refresh_token: params.refresh_token,
-        };
-      }
-    }
-
-    console.log('❌ 토큰을 찾을 수 없음');
-    return null;
-  } catch (error) {
-    console.error('❌ URL 파싱 오류:', error);
-    return null;
-  }
-};
-
 const SignInScreen = () => {
   const [loading, setLoading] = useState(false);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const createSessionFromUrl = useCallback(async (url: string) => {
-    // helzzang:// 스킴인지 확인
-    if (!url.startsWith('helzzang://')) {
-      console.log('⚠️  helzzang:// 스킴이 아님, 무시');
-      return;
-    }
+  // 구글 로그인 후 앱 복귀 시: URL 직접 처리 + auth 변경 구독 + 앱 포그라운드 시 세션 폴링
+  useFocusEffect(
+    React.useCallback(() => {
+      let cancelled = false;
+      const goToCommunity = () => {
+        if (!cancelled) navigation.replace('Community');
+      };
 
-    const tokens = parseSessionFromUrl(url);
-    if (!tokens) {
-      console.log('⚠️  토큰을 찾을 수 없어 세션 생성 불가');
-      Alert.alert(
-        '로그인 오류',
-        '인증 토큰을 받지 못했습니다. 다시 시도해주세요.',
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (!cancelled && session) navigation.goBack();
+      });
+
+      const urlSub = Linking.addEventListener('url', async ({ url }) => {
+        if (cancelled) return;
+        const ok = await handleAuthCallbackUrl(url);
+        if (ok) goToCommunity();
+      });
+
+      Linking.getInitialURL().then(async url => {
+        if (cancelled || !url) return;
+        const ok = await handleAuthCallbackUrl(url);
+        if (ok) goToCommunity();
+      });
+
+      const { data: authSub } = supabase.auth.onAuthStateChange(
+        (_event, session) => {
+          if (!cancelled && session) goToCommunity();
+        },
       );
-      return;
-    }
 
-    setLoading(true);
+      // 3) 앱이 포그라운드로 돌아올 때: 즉시 세션 체크 + URL 폴백 + 세션 폴링
+      let pollCleanup: (() => void) | null = null;
+      const pollSession = () => {
+        pollCleanup?.();
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (!cancelled && session) goToCommunity();
+        });
+        let count = 0;
+        const max = 12;
+        const id = setInterval(() => {
+          if (cancelled || count >= max) {
+            clearInterval(id);
+            return;
+          }
+          count += 1;
+          supabase.auth.getSession().then(({ data: { session } }) => {
+            if (!cancelled && session) {
+              clearInterval(id);
+              goToCommunity();
+            }
+          });
+        }, 500);
+        pollCleanup = () => clearInterval(id);
+      };
 
-    const { data, error } = await supabase.auth.setSession({
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token,
-    });
+      const onAppActive = () => {
+        if (cancelled) return;
+        Linking.getInitialURL().then(async url => {
+          if (cancelled || !url || !url.startsWith('helzzang://')) return;
+          const ok = await handleAuthCallbackUrl(url);
+          if (ok) goToCommunity();
+        });
+        pollSession();
+      };
 
-    setLoading(false);
+      const appStateSub = AppState.addEventListener('change', (state: AppStateStatus) => {
+        if (state === 'active') onAppActive();
+      });
+      if (AppState.currentState === 'active') onAppActive();
 
-    if (error) {
-      return;
-    }
-
-    if (data.session) {
-      console.log('✅ 로그인 성공! 사용자:', data.session.user.email);
-      // 로그인 성공 시 onAuthStateChange 로 네비게이션 처리 가능
-    } else {
-      console.log('⚠️  세션이 생성되지 않음');
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log('🔗 딥링크 리스너 설정');
-
-    // 앱이 콜백 URL로 열렸을 때 (콜드 스타트)
-    const handleInitialUrl = async () => {
-      const url = await Linking.getInitialURL();
-      if (url) {
-        console.log('📱 초기 URL:', url);
-        createSessionFromUrl(url);
-      } else {
-        console.log('📱 초기 URL 없음');
-      }
-    };
-    handleInitialUrl();
-
-    // 앱이 백그라운드에 있을 때 콜백 URL로 복귀
-    const subscription = Linking.addEventListener('url', ({ url }) => {
-      console.log('📱 딥링크 수신:', url);
-      createSessionFromUrl(url);
-    });
-
-    return () => {
-      console.log('🔗 딥링크 리스너 제거');
-      subscription.remove();
-    };
-  }, [createSessionFromUrl]);
+      return () => {
+        cancelled = true;
+        urlSub.remove();
+        authSub.subscription.unsubscribe();
+        appStateSub.remove();
+        pollCleanup?.();
+      };
+    }, [navigation]),
+  );
 
   const signInWithGoogle = async () => {
     setLoading(true);
     const redirectTo = getRedirectUrl();
-
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -162,8 +129,6 @@ const SignInScreen = () => {
       const canOpen = await Linking.canOpenURL(data.url);
       if (canOpen) {
         await Linking.openURL(data.url);
-        // 브라우저가 열렸으므로 loading은 false로 설정하지 않음
-        // 사용자가 Google 로그인 후 앱으로 돌아오면 딥링크 핸들러가 처리
       } else {
         setLoading(false);
       }
@@ -179,7 +144,7 @@ const SignInScreen = () => {
         style={styles.logo}
       />
       <Button
-        title={loading ? '처리 중...' : 'Sign in with Google'}
+        title={'Sign in with Google'}
         onPress={signInWithGoogle}
         disabled={loading}
         buttonStyle={styles.googleButton}
@@ -193,7 +158,6 @@ const SignInScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
     backgroundColor: colors.white,
