@@ -76,18 +76,19 @@ const theme = createTheme({
       };
     },
     Input: (props, theme) => ({
+      containerStyle: {
+        paddingHorizontal: 0,
+      },
       inputStyle: {
         paddingHorizontal: 0,
       },
       inputContainerStyle: {
-        border: theme.colors.primary,
-        height: 60,
         borderWidth: 1,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
         backgroundColor: theme.colors.white,
-        borderColor: theme.colors.primary,
-        borderRadius: 100,
+        borderColor: theme.colors.greyOutline,
+        borderRadius: 10,
       },
     }),
     // Icon: (props, theme) => ({

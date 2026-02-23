@@ -13,6 +13,7 @@ import AIComparisonScreen from '../screens/AIComparisonScreen';
 import CommunityScreen from '../screens/community/CommunityScreen';
 import SignInScreen from '../screens/SignInScreen';
 import { colors } from '../../themed';
+import CommunityWriteScreen from '../screens/community/CommunityWriteScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -21,6 +22,7 @@ export type RootStackParamList = {
   AIComparison: undefined;
   Community: undefined;
   SignIn: undefined;
+  CommunityWrite: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -80,6 +82,7 @@ const RootNavigator = () => {
       <Stack.Screen name="AIComparison" component={AIComparisonScreen} />
       <Stack.Screen name="Community" component={CommunityScreen} />
       <Stack.Screen name="SignIn" component={SignInScreen} />
+      <Stack.Screen name="CommunityWrite" component={CommunityWriteScreen} />
     </Stack.Navigator>
   );
 };
