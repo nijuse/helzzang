@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { formatRelativeTime } from '../lib/utils';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -41,6 +42,11 @@ const useStyles = makeStyles(theme => ({
     borderColor: theme.colors.greyOutline,
     paddingVertical: 10,
   },
+  contentInfoMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
 }));
 
 const CommunityItem = ({
@@ -73,9 +79,13 @@ const CommunityItem = ({
         />
       </Pressable>
       <View style={styles.contentInfo}>
-        <Text>
-          {userName} | <Text style={styles.moreButtonText}>{createdAt} 전</Text>
-        </Text>
+        <View style={styles.contentInfoMeta}>
+          <Text>{userName.slice(0, 10)}</Text>
+          <Text>|</Text>
+          <Text style={styles.moreButtonText}>
+            {formatRelativeTime(createdAt)}
+          </Text>
+        </View>
         <Text>댓글 {commentCount}</Text>
       </View>
     </View>
