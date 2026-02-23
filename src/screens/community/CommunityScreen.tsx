@@ -51,10 +51,12 @@ const CommunityScreen = () => {
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    if (!session) {
-      navigation.navigate('SignIn');
-    }
-    // 로그인된 경우: 추후 글쓰기 화면으로 이동 등 처리
+    // if (!session) {
+    //   navigation.navigate('SignIn');
+    //   return;
+    // }
+    // 로그인된 경우: 글쓰기 화면으로 이동 등 처리
+    navigation.navigate('CommunityWrite');
   };
 
   return (
