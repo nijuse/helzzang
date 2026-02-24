@@ -134,9 +134,23 @@ export function useCommunityPost(postId: string) {
         }
       }
 
+      // 해당 게시글의 댓글 개수 조회 (community_comments.postId = postId 인 행 개수)
+      let commentCount = 0;
+      const { count, error: commentsError } = await supabase
+        .from('community_comments')
+        .select('id', { count: 'exact', head: true })
+        .eq('postId', postId);
+
+      if (commentsError) {
+        console.error('단일 게시글 댓글 개수 조회 에러:', commentsError);
+      } else if (typeof count === 'number') {
+        commentCount = count;
+      }
+
       return {
         ...post,
         userName,
+        commentCount,
       } as CommunityPost;
     },
     enabled: !!postId,
