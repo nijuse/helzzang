@@ -92,7 +92,7 @@ const CommunityItem = ({
       </Pressable>
       <View style={styles.contentInfo}>
         <View style={styles.contentInfoMeta}>
-          <Text>{userName.slice(0, 10)}</Text>
+          <Text>{userName}</Text>
           <Text>|</Text>
           <Text style={styles.moreButtonText}>
             {formatRelativeTime(createdAt)}

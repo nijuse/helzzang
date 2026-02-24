@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   ScrollView,
   Pressable,
+  Alert,
 } from 'react-native';
 import { Input, makeStyles } from '@rneui/themed';
 import { useRoute, RouteProp } from '@react-navigation/native';
@@ -13,6 +14,8 @@ import { RootStackParamList } from '../../navigation/RootNavigator';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { supabase } from '../../lib/supabase';
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import useCommunityComments from '../../hooks/useCommunityComments';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -136,8 +139,51 @@ const CommunityDetailScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'CommunityDetail'>>();
   const { id } = route.params;
   const { data: post, isLoading, isError, error } = useCommunityPost(id);
-  const [comment, setComment] = useState('');
+  const { data: comments } = useCommunityComments(id);
 
+  const [comment, setComment] = useState('');
+  const queryClient = useQueryClient();
+
+  const handleAddComment = async () => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const userId =
+        session?.user?.id ?? 'e6530a3d-99fa-4951-bbfc-e98e4c2d055c';
+      if (!userId) {
+        throw new Error('로그인이 필요합니다.');
+      }
+
+      const { error: insertError } = await supabase
+        .from('community_comments')
+        .insert({
+          comment: comment.trim(),
+          userId: userId,
+          postId: id,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+
+      if (insertError) {
+        console.error('댓글 등록 에러:', insertError);
+        throw insertError;
+      }
+
+      // 댓글 입력 필드 초기화
+      setComment('');
+
+      // 게시글 데이터와 목록 데이터 무효화하여 refetch
+      queryClient.invalidateQueries({ queryKey: ['communityPost', id] });
+      queryClient.invalidateQueries({ queryKey: ['communityPosts'] });
+    } catch (err) {
+      Alert.alert(
+        '댓글 추가 실패',
+        (err as Error).message || '다시 시도해 주세요.',
+      );
+    }
+  };
   const handleEditPress = async () => {
     await supabase.auth.getSession();
     // if (!session) {
@@ -170,23 +216,34 @@ const CommunityDetailScreen = () => {
     );
   }
 
-  const userName = post.userId?.slice(0, 20) ?? '익명';
+  const userName = post.userName ?? '익명';
   const commentCount = post.commentCount ?? 0;
   const createdAt = post.createdAt ?? '';
 
   return (
     <View style={styles.wrapper}>
       <ScrollView style={styles.container}>
-        <View style={styles.titleWrapper}>
-          <Text style={styles.title}>{post.title}</Text>
-          <Text style={styles.userName}>{userName}</Text>
-          <Text style={styles.createdAt}>
-            {createdAt ? formatRelativeTime(createdAt) : '-'}
-          </Text>
+        <View>
+          <View style={styles.titleWrapper}>
+            <Text style={styles.title}>{post.title}</Text>
+            <Text style={styles.userName}>{userName}</Text>
+            <Text style={styles.createdAt}>
+              {createdAt ? formatRelativeTime(createdAt) : '-'}
+            </Text>
+          </View>
+          <Text style={styles.body}>{post.content}</Text>
+          <View style={styles.meta}>
+            <Text style={styles.commentCount}>댓글 {commentCount}</Text>
+          </View>
         </View>
-        <Text style={styles.body}>{post.content}</Text>
-        <View style={styles.meta}>
-          <Text style={styles.commentCount}>댓글 {commentCount}</Text>
+        <View>
+          {comments?.map(comment => (
+            <View key={comment.id}>
+              <Text>{comment.userName}</Text>
+              <Text>{comment.comment}</Text>
+              <Text>{formatRelativeTime(comment.createdAt)}</Text>
+            </View>
+          ))}
         </View>
       </ScrollView>
       <View style={styles.commentInputWrapper}>
@@ -208,7 +265,7 @@ const CommunityDetailScreen = () => {
           onChangeText={setComment}
         />
         {comment?.trim()?.length > 0 && (
-          <Pressable onPress={() => {}} style={{ marginBottom: 26 }}>
+          <Pressable onPress={handleAddComment} style={{ marginBottom: 26 }}>
             <Ionicons
               name="send"
               size={32}
