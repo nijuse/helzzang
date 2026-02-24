@@ -2,6 +2,9 @@ import { View, Text, Pressable } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { formatRelativeTime } from '../lib/utils';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -55,22 +58,31 @@ const CommunityItem = ({
   userName,
   createdAt,
   commentCount,
+  id,
 }: {
   title: string;
   content: string;
   userName: string;
   createdAt: string;
   commentCount: number;
+  id: string;
 }) => {
   const styles = useStyles();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  const handlePress = () => {
+    navigation.navigate('CommunityDetail', { id: id });
+  };
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      <Pressable onPress={handlePress}>
+        <Text style={styles.title}>{title}</Text>
+      </Pressable>
       <Text numberOfLines={4} ellipsizeMode="tail" style={styles.content}>
         {content}
       </Text>
-      <Pressable style={styles.moreButton} onPress={() => {}}>
+      <Pressable style={styles.moreButton} onPress={handlePress}>
         <Text style={styles.moreButtonText}>더보기</Text>
         <Ionicons
           name="chevron-forward"

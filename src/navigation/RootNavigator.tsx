@@ -3,7 +3,7 @@ import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import { StyleSheet, Text, Pressable } from 'react-native';
+import { StyleSheet, Image, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/HomeScreen';
@@ -14,6 +14,7 @@ import CommunityScreen from '../screens/community/CommunityScreen';
 import SignInScreen from '../screens/SignInScreen';
 import { colors } from '../../themed';
 import CommunityWriteScreen from '../screens/community/CommunityWriteScreen';
+import CommunityDetailScreen from '../screens/community/CommunityDetailScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -23,6 +24,7 @@ export type RootStackParamList = {
   Community: undefined;
   SignIn: undefined;
   CommunityWrite: undefined;
+  CommunityDetail: { id: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,20 +46,13 @@ const LogoHeader = () => {
     navigation.navigate('Home');
   };
 
-  // 로고 이미지가 있다면 이 부분의 주석을 해제하고 경로를 수정하세요
-  // import { Image } from 'react-native'; 추가 필요
-  // return (
-  //   <Pressable onPress={handlePress}>
-  //     <Image
-  //       source={require('../../assets/logo.png')}
-  //       style={styles.logo}
-  //       resizeMode="contain"
-  //     />
-  //   </Pressable>
-  // );
   return (
     <Pressable onPress={handlePress}>
-      <Text style={styles.logoText}>HELZZANG</Text>
+      <Image
+        source={require('../../assets/images/logo2.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
     </Pressable>
   );
 };
@@ -83,6 +78,7 @@ const RootNavigator = () => {
       <Stack.Screen name="Community" component={CommunityScreen} />
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="CommunityWrite" component={CommunityWriteScreen} />
+      <Stack.Screen name="CommunityDetail" component={CommunityDetailScreen} />
     </Stack.Navigator>
   );
 };

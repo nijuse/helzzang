@@ -1,11 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 
+/** 커뮤니티 게시글 (DB community 테이블 기준) */
+export type CommunityPost = {
+  id: string;
+  title: string;
+  content: string;
+  userId: string;
+  createdAt: string;
+  updatedAt?: string;
+  commentCount?: number;
+};
+
 /**
  * 커뮤니티 게시글 목록 조회 (TanStack Query 캐싱)
  */
 export default function useCommunityPosts() {
-  return useQuery({
+  return useQuery<CommunityPost[]>({
     queryKey: ['communityPosts'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -31,7 +42,7 @@ export default function useCommunityPosts() {
  * 특정 게시글 조회
  */
 export function useCommunityPost(postId: string) {
-  return useQuery({
+  return useQuery<CommunityPost | null>({
     queryKey: ['communityPost', postId],
     queryFn: async () => {
       const { data, error } = await supabase
