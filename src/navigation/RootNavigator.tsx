@@ -62,7 +62,7 @@ const RootNavigator = () => {
     <Stack.Navigator
       initialRouteName="Home"
       screenOptions={({ route }) => ({
-        contentStyle: { backgroundColor: colors.white, padding: 24 },
+        contentStyle: { backgroundColor: colors.white },
         headerTitle: LogoHeader,
         headerTitleAlign: 'center',
         headerBackVisible: route.name !== 'Home',

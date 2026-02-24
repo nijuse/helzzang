@@ -6,7 +6,9 @@ import { RootStackParamList } from '../../navigation/RootNavigator';
 import { supabase } from '../../lib/supabase';
 import { makeStyles } from '@rneui/themed';
 import CommunityItem from '../../components/CommunityItem';
-import useCommunityPosts, { type CommunityPost } from '../../hooks/useCommunityPosts';
+import useCommunityPosts, {
+  type CommunityPost,
+} from '../../hooks/useCommunityPosts';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -14,11 +16,12 @@ const useStyles = makeStyles(theme => ({
   },
   container: {
     flex: 1,
+    padding: 24,
   },
   fab: {
     position: 'absolute',
-    right: 20,
-    bottom: 24,
+    right: 24,
+    bottom: 36,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,

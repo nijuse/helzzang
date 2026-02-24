@@ -8,16 +8,26 @@ const useStyles = makeStyles(theme => ({
   wrapper: {
     flex: 1,
   },
+  container: {
+    flex: 1,
+    padding: 24,
+    paddingBottom: 116,
+  },
   buttonWrapper: {
     position: 'absolute',
     right: 0,
     bottom: 0,
     width: '100%',
-    height: 70,
+    height: 98,
     backgroundColor: theme.colors.white,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.greyOutline,
+    padding: 24,
+    // iOS shadow
+    shadowColor: theme.colors.black,
+    shadowOffset: { width: 0, height: -10 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    // Android elevation
+    elevation: 8,
   },
   button: {
     color: theme.colors.white,
@@ -76,23 +86,25 @@ const CommunityWriteScreen = () => {
   };
   return (
     <View style={styles.wrapper}>
-      <Input
-        placeholder="제목을 입력하세요"
-        inputContainerStyle={styles.titleInputContainer}
-        value={title}
-        onChangeText={setTitle}
-      />
-      <View style={styles.textAreaWrapper}>
-        <TextInput
-          multiline
-          placeholder="내용을 입력하세요"
-          placeholderTextColor="#999"
-          style={styles.textArea}
-          scrollEnabled
-          textAlignVertical="top"
-          value={content}
-          onChangeText={setContent}
+      <View style={styles.container}>
+        <Input
+          placeholder="제목을 입력하세요"
+          inputContainerStyle={styles.titleInputContainer}
+          value={title}
+          onChangeText={setTitle}
         />
+        <View style={styles.textAreaWrapper}>
+          <TextInput
+            multiline
+            placeholder="내용을 입력하세요"
+            placeholderTextColor="#999"
+            style={styles.textArea}
+            scrollEnabled
+            textAlignVertical="top"
+            value={content}
+            onChangeText={setContent}
+          />
+        </View>
       </View>
       <View style={styles.buttonWrapper}>
         <Button

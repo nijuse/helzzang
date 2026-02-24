@@ -7,7 +7,13 @@
 
 import React, { useEffect, useRef } from 'react';
 import { ThemeProvider } from '@rneui/themed';
-import { StatusBar, useColorScheme, Linking, AppState, AppStateStatus } from 'react-native';
+import {
+  StatusBar,
+  useColorScheme,
+  Linking,
+  AppState,
+  AppStateStatus,
+} from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   NavigationContainer,
@@ -62,11 +68,14 @@ function App() {
       handleUrl(url);
     });
 
-    const appStateSub = AppState.addEventListener('change', (state: AppStateStatus) => {
-      if (state === 'active') {
-        Linking.getInitialURL().then(handleUrl);
-      }
-    });
+    const appStateSub = AppState.addEventListener(
+      'change',
+      (state: AppStateStatus) => {
+        if (state === 'active') {
+          Linking.getInitialURL().then(handleUrl);
+        }
+      },
+    );
 
     return () => {
       subscription.remove();

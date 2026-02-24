@@ -18,6 +18,7 @@ const useStyles = makeStyles(theme => ({
   },
   contents: {
     flex: 1,
+    padding: 24,
   },
   contentsContainer: {
     width: '100%',
