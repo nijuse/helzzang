@@ -6,7 +6,7 @@ import { RootStackParamList } from '../../navigation/RootNavigator';
 import { supabase } from '../../lib/supabase';
 import { makeStyles } from '@rneui/themed';
 import CommunityItem from '../../components/CommunityItem';
-import useCommunityPosts from '../../hooks/useCommunityPosts';
+import useCommunityPosts, { type CommunityPost } from '../../hooks/useCommunityPosts';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -48,9 +48,7 @@ const CommunityScreen = () => {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data } = useCommunityPosts();
   const handleWritePress = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    await supabase.auth.getSession();
     // if (!session) {
     //   navigation.navigate('SignIn');
     //   return;
@@ -63,14 +61,15 @@ const CommunityScreen = () => {
     <View style={styles.wrapper}>
       <ScrollView style={styles.container}>
         {data && data.length > 0 ? (
-          data.map((post: any) => (
+          data.map((post: CommunityPost) => (
             <CommunityItem
               key={post.id}
               title={post.title}
               content={post.content}
-              userName={post.userId}
-              createdAt={post.createdAt}
-              commentCount={0}
+              userName={post.userId ?? ''}
+              createdAt={post.createdAt ?? ''}
+              commentCount={post.commentCount ?? 0}
+              id={post.id}
             />
           ))
         ) : (
