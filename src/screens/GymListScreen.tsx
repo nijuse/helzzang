@@ -9,6 +9,11 @@ import Dropdown from 'react-native-input-select';
 import { colors } from '../../themed';
 
 const useStyles = makeStyles(theme => ({
+  container: {
+    flex: 1,
+    padding: 24,
+    position: 'relative',
+  },
   dropdown: {
     borderRadius: 100,
     borderColor: theme.colors.greyOutline,
@@ -94,7 +99,7 @@ const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
   }, [selectedFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <ScrollView style={{ position: 'relative' }}>
+    <ScrollView style={styles.container}>
       <Dropdown
         dropdownIconStyle={styles.dropdownIcon}
         autoCloseOnSelect={true}

@@ -5,17 +5,22 @@ import {
   ScrollView,
   Pressable,
 } from 'react-native';
-import { makeStyles } from '@rneui/themed';
+import { Input, makeStyles } from '@rneui/themed';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { useCommunityPost } from '../../hooks/useCommunityPosts';
 import { formatRelativeTime } from '../../lib/utils';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { supabase } from '../../lib/supabase';
+import { useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
     flex: 1,
+  },
+  container: {
+    flex: 1,
+    padding: 24,
   },
   loading: {
     flex: 1,
@@ -80,10 +85,10 @@ const useStyles = makeStyles(theme => ({
     fontSize: 14,
     color: theme.colors.grey0,
   },
-  fab: {
+  editButton: {
     position: 'absolute',
-    right: 0,
-    bottom: 24,
+    right: 24,
+    bottom: 126,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -97,13 +102,32 @@ const useStyles = makeStyles(theme => ({
     shadowRadius: 4,
     elevation: 4,
   },
-  fabPressed: {
+  editButtonPressed: {
     opacity: 0.85,
   },
-  fabText: {
+  editButtonText: {
     color: theme.colors.white,
     fontSize: 15,
     fontWeight: '600',
+  },
+  commentInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: theme.colors.white,
+    // iOS shadow
+    shadowColor: theme.colors.black,
+    shadowOffset: { width: 0, height: -10 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    // Android elevation
+    elevation: 8,
+  },
+  commentInputIcon: {
+    color: theme.colors.primary,
   },
 }));
 
@@ -112,6 +136,7 @@ const CommunityDetailScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'CommunityDetail'>>();
   const { id } = route.params;
   const { data: post, isLoading, isError, error } = useCommunityPost(id);
+  const [comment, setComment] = useState('');
 
   const handleEditPress = async () => {
     await supabase.auth.getSession();
@@ -151,7 +176,7 @@ const CommunityDetailScreen = () => {
 
   return (
     <View style={styles.wrapper}>
-      <ScrollView style={styles.wrapper}>
+      <ScrollView style={styles.container}>
         <View style={styles.titleWrapper}>
           <Text style={styles.title}>{post.title}</Text>
           <Text style={styles.userName}>{userName}</Text>
@@ -164,12 +189,43 @@ const CommunityDetailScreen = () => {
           <Text style={styles.commentCount}>댓글 {commentCount}</Text>
         </View>
       </ScrollView>
+      <View style={styles.commentInputWrapper}>
+        <Input
+          placeholder="댓글을 입력하세요"
+          containerStyle={{
+            flex: 1,
+            paddingHorizontal: 0,
+          }}
+          inputContainerStyle={{
+            borderRadius: 100,
+            height: 44,
+            paddingHorizontal: 16,
+          }}
+          inputStyle={{
+            paddingVertical: 0,
+          }}
+          value={comment}
+          onChangeText={setComment}
+        />
+        {comment?.trim()?.length > 0 && (
+          <Pressable onPress={() => {}} style={{ marginBottom: 26 }}>
+            <Ionicons
+              name="send"
+              size={32}
+              color={styles.commentInputIcon.color}
+            />
+          </Pressable>
+        )}
+      </View>
       <Pressable
-        style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
+        style={({ pressed }) => [
+          styles.editButton,
+          pressed && styles.editButtonPressed,
+        ]}
         onPress={handleEditPress}
       >
         <Ionicons name="pencil" size={20} color={'#fff'} />
-        <Text style={styles.fabText}>수정</Text>
+        <Text style={styles.editButtonText}>수정</Text>
       </Pressable>
     </View>
   );
