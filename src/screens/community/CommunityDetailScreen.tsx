@@ -216,32 +216,49 @@ const CommunityDetailScreen = () => {
     );
   }
 
-  const userName = post.userName ?? '익명';
-  const commentCount = post.commentCount ?? 0;
-  const createdAt = post.createdAt ?? '';
-
   return (
     <View style={styles.wrapper}>
       <ScrollView style={styles.container}>
         <View>
           <View style={styles.titleWrapper}>
             <Text style={styles.title}>{post.title}</Text>
-            <Text style={styles.userName}>{userName}</Text>
+            <Text style={styles.userName}>{post.userName ?? '익명'}</Text>
             <Text style={styles.createdAt}>
-              {createdAt ? formatRelativeTime(createdAt) : '-'}
+              {post.createdAt ?? ''
+                ? formatRelativeTime(post.createdAt ?? '')
+                : '-'}
             </Text>
           </View>
           <Text style={styles.body}>{post.content}</Text>
           <View style={styles.meta}>
-            <Text style={styles.commentCount}>댓글 {commentCount}</Text>
+            <Text style={styles.commentCount}>
+              댓글 {post.commentCount ?? 0}
+            </Text>
           </View>
         </View>
         <View>
           {comments?.map(comment => (
-            <View key={comment.id}>
-              <Text>{comment.userName}</Text>
+            <View
+              key={comment.id}
+              style={{
+                gap: 8,
+                paddingVertical: 16,
+                borderBottomWidth: 1,
+                borderColor: styles.meta.borderColor,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Text>{comment.userName}</Text>
+                <Text style={{ color: styles.commentCount.color }}>
+                  {formatRelativeTime(comment.createdAt)}
+                </Text>
+              </View>
               <Text>{comment.comment}</Text>
-              <Text>{formatRelativeTime(comment.createdAt)}</Text>
             </View>
           ))}
         </View>
