@@ -7,7 +7,8 @@ import {
   Alert,
 } from 'react-native';
 import { Input, makeStyles } from '@rneui/themed';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCommunityPost } from '../../hooks/useCommunityPosts';
 import { formatRelativeTime } from '../../lib/utils';
 import { RootStackParamList } from '../../navigation/RootNavigator';
@@ -16,6 +17,12 @@ import { supabase } from '../../lib/supabase';
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import useCommunityComments from '../../hooks/useCommunityComments';
+import useSupabaseAuth from '../../hooks/useSupabaseAuth';
+
+type CommunityDetailScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'CommunityDetail'
+>;
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -81,8 +88,6 @@ const useStyles = makeStyles(theme => ({
   createdAt: {
     fontSize: 14,
     color: theme.colors.grey0,
-    width: '100%',
-    textAlign: 'right',
   },
   commentCount: {
     fontSize: 14,
@@ -136,8 +141,11 @@ const useStyles = makeStyles(theme => ({
 
 const CommunityDetailScreen = () => {
   const styles = useStyles();
+  const navigation = useNavigation<CommunityDetailScreenNavigationProp>();
   const route = useRoute<RouteProp<RootStackParamList, 'CommunityDetail'>>();
   const { id } = route.params;
+  const { user } = useSupabaseAuth();
+  const userId = user?.id ?? 'e6530a3d-99fa-4951-bbfc-e98e4c2d055c';
   const { data: post, isLoading, isError, error } = useCommunityPost(id);
   const { data: comments } = useCommunityComments(id);
 
@@ -184,6 +192,41 @@ const CommunityDetailScreen = () => {
       );
     }
   };
+
+  const handleDeletePost = async () => {
+    Alert.alert('게시글 삭제', '정말 게시글을 삭제하시겠습니까?', [
+      {
+        text: '취소',
+        style: 'cancel',
+        onPress: () => {
+          return;
+        },
+      },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const { error: deleteError } = await supabase
+              .from('community')
+              .delete()
+              .eq('id', id);
+            navigation.goBack();
+            if (deleteError) {
+              console.error('게시글 삭제 에러:', deleteError);
+              throw deleteError;
+            }
+          } catch (err) {
+            Alert.alert(
+              '게시글 삭제 실패',
+              (err as Error).message || '다시 시도해 주세요.',
+            );
+          }
+        },
+      },
+    ]);
+  };
+
   const handleEditPress = async () => {
     await supabase.auth.getSession();
     // if (!session) {
@@ -191,7 +234,7 @@ const CommunityDetailScreen = () => {
     //   return;
     // }
     // 로그인된 경우: 글쓰기 화면으로 이동 등 처리
-    // navigation.navigate('CommunityWrite', { id: id });
+    navigation.navigate('CommunityWrite', { id: id });
   };
 
   if (isLoading) {
@@ -222,18 +265,30 @@ const CommunityDetailScreen = () => {
         <View>
           <View style={styles.titleWrapper}>
             <Text style={styles.title}>{post.title}</Text>
-            <Text style={styles.userName}>{post.userName ?? '익명'}</Text>
-            <Text style={styles.createdAt}>
-              {post.createdAt ?? ''
-                ? formatRelativeTime(post.createdAt ?? '')
-                : '-'}
-            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}
+            >
+              <Text style={styles.userName}>{post.userName ?? '익명'}</Text>
+              <Text style={styles.createdAt}>
+                {post.createdAt ?? ''
+                  ? formatRelativeTime(post.createdAt ?? '')
+                  : '-'}
+              </Text>
+            </View>
           </View>
           <Text style={styles.body}>{post.content}</Text>
           <View style={styles.meta}>
             <Text style={styles.commentCount}>
               댓글 {post.commentCount ?? 0}
             </Text>
+            <Pressable onPress={handleDeletePost}>
+              <Text>삭제</Text>
+            </Pressable>
           </View>
         </View>
         <View>
@@ -291,16 +346,18 @@ const CommunityDetailScreen = () => {
           </Pressable>
         )}
       </View>
-      <Pressable
-        style={({ pressed }) => [
-          styles.editButton,
-          pressed && styles.editButtonPressed,
-        ]}
-        onPress={handleEditPress}
-      >
-        <Ionicons name="pencil" size={20} color={'#fff'} />
-        <Text style={styles.editButtonText}>수정</Text>
-      </Pressable>
+      {post.userId === userId && (
+        <Pressable
+          style={({ pressed }) => [
+            styles.editButton,
+            pressed && styles.editButtonPressed,
+          ]}
+          onPress={handleEditPress}
+        >
+          <Ionicons name="pencil" size={20} color={'#fff'} />
+          <Text style={styles.editButtonText}>수정</Text>
+        </Pressable>
+      )}
     </View>
   );
 };

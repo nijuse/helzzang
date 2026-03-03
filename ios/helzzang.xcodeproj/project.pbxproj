@@ -10,20 +10,20 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3540EB79C58F3F020C170E74 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
-		762503ED012D359245CEF3D5 /* libPods-helzzang.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 578E1069CD04C05FC8DC87AC /* libPods-helzzang.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		F968CA2B953AA9A5766EC86E /* libPods-helzzang.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F7958940E890F6717FA714E /* libPods-helzzang.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		080B0F51EBFC590CD4365AFD /* Pods-helzzang.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-helzzang.debug.xcconfig"; path = "Target Support Files/Pods-helzzang/Pods-helzzang.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* helzzang.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = helzzang.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = helzzang/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = helzzang/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = helzzang/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		16B0CC256CF9289B95412F5E /* Pods-helzzang.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-helzzang.debug.xcconfig"; path = "Target Support Files/Pods-helzzang/Pods-helzzang.debug.xcconfig"; sourceTree = "<group>"; };
-		578E1069CD04C05FC8DC87AC /* libPods-helzzang.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-helzzang.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F7958940E890F6717FA714E /* libPods-helzzang.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-helzzang.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = helzzang/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = helzzang/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		A1E7B9FBB4272D6EC4DC0800 /* Pods-helzzang.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-helzzang.release.xcconfig"; path = "Target Support Files/Pods-helzzang/Pods-helzzang.release.xcconfig"; sourceTree = "<group>"; };
+		BDDD622A09C7C6962AB63F18 /* Pods-helzzang.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-helzzang.release.xcconfig"; path = "Target Support Files/Pods-helzzang/Pods-helzzang.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -32,7 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				762503ED012D359245CEF3D5 /* libPods-helzzang.a in Frameworks */,
+				F968CA2B953AA9A5766EC86E /* libPods-helzzang.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,7 +55,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				578E1069CD04C05FC8DC87AC /* libPods-helzzang.a */,
+				6F7958940E890F6717FA714E /* libPods-helzzang.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -93,8 +93,8 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				16B0CC256CF9289B95412F5E /* Pods-helzzang.debug.xcconfig */,
-				A1E7B9FBB4272D6EC4DC0800 /* Pods-helzzang.release.xcconfig */,
+				080B0F51EBFC590CD4365AFD /* Pods-helzzang.debug.xcconfig */,
+				BDDD622A09C7C6962AB63F18 /* Pods-helzzang.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -113,13 +113,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "helzzang" */;
 			buildPhases = (
-				74401347A94350C1E4BC40B1 /* [CP] Check Pods Manifest.lock */,
+				09033D39714D991ADD7E9B3F /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				8534336905D2B61BA96EEDF0 /* [CP] Embed Pods Frameworks */,
-				1868A81D201D3A75E4094724 /* [CP] Copy Pods Resources */,
+				6C53448D0F705D1DB81F81ED /* [CP] Embed Pods Frameworks */,
+				D19DDC9263FBF5011B9D19A6 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -191,24 +191,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		1868A81D201D3A75E4094724 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-helzzang/Pods-helzzang-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-helzzang/Pods-helzzang-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-helzzang/Pods-helzzang-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		74401347A94350C1E4BC40B1 /* [CP] Check Pods Manifest.lock */ = {
+		09033D39714D991ADD7E9B3F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -230,7 +213,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		8534336905D2B61BA96EEDF0 /* [CP] Embed Pods Frameworks */ = {
+		6C53448D0F705D1DB81F81ED /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -245,6 +228,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-helzzang/Pods-helzzang-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D19DDC9263FBF5011B9D19A6 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-helzzang/Pods-helzzang-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-helzzang/Pods-helzzang-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-helzzang/Pods-helzzang-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -263,7 +263,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 16B0CC256CF9289B95412F5E /* Pods-helzzang.debug.xcconfig */;
+			baseConfigurationReference = 080B0F51EBFC590CD4365AFD /* Pods-helzzang.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -295,7 +295,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A1E7B9FBB4272D6EC4DC0800 /* Pods-helzzang.release.xcconfig */;
+			baseConfigurationReference = BDDD622A09C7C6962AB63F18 /* Pods-helzzang.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

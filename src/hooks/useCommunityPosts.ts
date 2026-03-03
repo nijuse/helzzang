@@ -77,7 +77,6 @@ export default function useCommunityPosts() {
           userNameById[id] = userName ?? '익명';
         }
       }
-
       // 5) 각 게시글에 commentCount, userName 할당
       const result: CommunityPost[] = posts.map(row => ({
         ...row,
