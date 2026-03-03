@@ -70,7 +70,7 @@ const CommunityScreen = () => {
               title={post.title}
               content={post.content}
               userName={post.userName ?? ''}
-              createdAt={post.createdAt ?? ''}
+              createdAt={post.updatedAt ?? ''}
               commentCount={post.commentCount ?? 0}
               id={post.id}
             />

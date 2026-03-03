@@ -26,7 +26,7 @@ export default function useCommunityPosts() {
       const { data: postsData, error: postsError } = await supabase
         .from('community')
         .select('*')
-        .order('createdAt', { ascending: false });
+        .order('updatedAt', { ascending: false });
 
       if (postsError) {
         console.error('커뮤니티 게시글 조회 에러:', postsError);
