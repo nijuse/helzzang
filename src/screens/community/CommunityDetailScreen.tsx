@@ -211,11 +211,14 @@ const CommunityDetailScreen = () => {
               .from('community')
               .delete()
               .eq('id', id);
-            navigation.goBack();
             if (deleteError) {
               console.error('게시글 삭제 에러:', deleteError);
               throw deleteError;
             }
+            // 커뮤니티 목록 및 단일 게시글 캐시 무효화 후 목록으로 이동
+            queryClient.invalidateQueries({ queryKey: ['communityPosts'] });
+            queryClient.invalidateQueries({ queryKey: ['communityPost', id] });
+            navigation.goBack();
           } catch (err) {
             Alert.alert(
               '게시글 삭제 실패',
