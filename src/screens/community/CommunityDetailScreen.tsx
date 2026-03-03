@@ -14,7 +14,7 @@ import { formatRelativeTime } from '../../lib/utils';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { supabase } from '../../lib/supabase';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import useCommunityComments from '../../hooks/useCommunityComments';
 import useSupabaseAuth from '../../hooks/useSupabaseAuth';
@@ -147,10 +147,45 @@ const CommunityDetailScreen = () => {
   const { user } = useSupabaseAuth();
   const userId = user?.id ?? 'e6530a3d-99fa-4951-bbfc-e98e4c2d055c';
   const { data: post, isLoading, isError, error } = useCommunityPost(id);
-  const { data: comments } = useCommunityComments(id);
+  const { data: comments, refetch: refetchComments } = useCommunityComments(id);
 
   const [comment, setComment] = useState('');
   const queryClient = useQueryClient();
+
+  const queryReset = () => {
+    queryClient.invalidateQueries({
+      queryKey: ['communityComments', id],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ['communityPost', id],
+    });
+  };
+
+  const handleEditComment = (commentId: string) => {
+    queryReset();
+    navigation.navigate('CommunityCommentEdit', { id: commentId });
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const { error: deleteError } = await supabase
+        .from('community_comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (deleteError) {
+        console.error('댓글 삭제 에러:', deleteError);
+        throw deleteError;
+      }
+      queryReset();
+      refetchComments();
+    } catch (err) {
+      Alert.alert(
+        '댓글 삭제 실패',
+        (err as Error).message || '다시 시도해 주세요.',
+      );
+    }
+  };
 
   const handleAddComment = async () => {
     try {
@@ -181,6 +216,7 @@ const CommunityDetailScreen = () => {
 
       // 댓글 입력 필드 초기화
       setComment('');
+      refetchComments();
 
       // 게시글 데이터와 목록 데이터 무효화하여 refetch
       queryClient.invalidateQueries({ queryKey: ['communityPost', id] });
@@ -239,6 +275,10 @@ const CommunityDetailScreen = () => {
     // 로그인된 경우: 글쓰기 화면으로 이동 등 처리
     navigation.navigate('CommunityWrite', { id: id });
   };
+
+  useEffect(() => {
+    queryReset();
+  }, [id, queryReset]);
 
   if (isLoading) {
     return (
@@ -300,9 +340,9 @@ const CommunityDetailScreen = () => {
           </View>
         </View>
         <View>
-          {comments?.map(comment => (
+          {comments?.map(commentItem => (
             <View
-              key={comment.id}
+              key={commentItem.id}
               style={{
                 gap: 8,
                 paddingVertical: 16,
@@ -316,12 +356,24 @@ const CommunityDetailScreen = () => {
                   justifyContent: 'space-between',
                 }}
               >
-                <Text>{comment.userName}</Text>
-                <Text style={{ color: styles.commentCount.color }}>
-                  {formatRelativeTime(comment.createdAt)}
-                </Text>
+                <Text>{commentItem.userName}</Text>
+                <View
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+                >
+                  <Text style={{ color: styles.commentCount.color }}>
+                    {formatRelativeTime(commentItem.createdAt)}
+                  </Text>
+                  <Pressable onPress={() => handleEditComment(commentItem.id)}>
+                    <Text>수정</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => handleDeleteComment(commentItem.id)}
+                  >
+                    <Text>삭제</Text>
+                  </Pressable>
+                </View>
               </View>
-              <Text>{comment.comment}</Text>
+              <Text>{commentItem.comment}</Text>
             </View>
           ))}
         </View>
