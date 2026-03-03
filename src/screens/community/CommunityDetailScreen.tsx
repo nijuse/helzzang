@@ -14,7 +14,7 @@ import { formatRelativeTime } from '../../lib/utils';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { supabase } from '../../lib/supabase';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import useCommunityComments from '../../hooks/useCommunityComments';
 import useSupabaseAuth from '../../hooks/useSupabaseAuth';
@@ -152,14 +152,14 @@ const CommunityDetailScreen = () => {
   const [comment, setComment] = useState('');
   const queryClient = useQueryClient();
 
-  const queryReset = () => {
+  const queryReset = useCallback(() => {
     queryClient.invalidateQueries({
       queryKey: ['communityComments', id],
     });
     queryClient.invalidateQueries({
       queryKey: ['communityPost', id],
     });
-  };
+  }, [id, queryClient]);
 
   const handleEditComment = (commentId: string) => {
     queryReset();
@@ -357,12 +357,21 @@ const CommunityDetailScreen = () => {
                 }}
               >
                 <Text>{commentItem.userName}</Text>
+                <Text style={{ color: styles.commentCount.color }}>
+                  {formatRelativeTime(commentItem.createdAt)}
+                </Text>
+              </View>
+              <Text>{commentItem.comment}</Text>
+              {commentItem.userId === userId && (
                 <View
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    marginTop: 8,
+                    gap: 8,
+                  }}
                 >
-                  <Text style={{ color: styles.commentCount.color }}>
-                    {formatRelativeTime(commentItem.createdAt)}
-                  </Text>
                   <Pressable onPress={() => handleEditComment(commentItem.id)}>
                     <Text>수정</Text>
                   </Pressable>
@@ -372,8 +381,7 @@ const CommunityDetailScreen = () => {
                     <Text>삭제</Text>
                   </Pressable>
                 </View>
-              </View>
-              <Text>{commentItem.comment}</Text>
+              )}
             </View>
           ))}
         </View>
