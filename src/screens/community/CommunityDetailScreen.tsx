@@ -275,9 +275,14 @@ const CommunityDetailScreen = () => {
             >
               <Text style={styles.userName}>{post.userName ?? '익명'}</Text>
               <Text style={styles.createdAt}>
-                {post.createdAt ?? ''
-                  ? formatRelativeTime(post.createdAt ?? '')
-                  : '-'}
+                {formatRelativeTime(
+                  post.createdAt === post.updatedAt
+                    ? post.createdAt
+                    : post.updatedAt ?? '',
+                )}
+                {post.createdAt !== post.updatedAt && (
+                  <Text style={styles.createdAt}>(편집)</Text>
+                )}
               </Text>
             </View>
           </View>
