@@ -4,16 +4,19 @@ import {
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 import { StyleSheet, Image, Pressable } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import HomeScreen from '../screens/HomeScreen';
 import RecentlyViewedScreen from '../screens/RecentlyViewedScreen';
 import GymListScreen from '../screens/GymListScreen';
 import AIComparisonScreen from '../screens/AIComparisonScreen';
 import CommunityScreen from '../screens/community/CommunityScreen';
 import SignInScreen from '../screens/SignInScreen';
-import { colors } from '../../themed';
 import CommunityWriteScreen from '../screens/community/CommunityWriteScreen';
 import CommunityDetailScreen from '../screens/community/CommunityDetailScreen';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import CommunityCommentEditScreen from '../screens/community/CommunityCommentEditScreen';
+
+import { colors } from '../../themed';
 import { useNavigation } from '@react-navigation/native';
 
 export type RootStackParamList = {
@@ -25,6 +28,7 @@ export type RootStackParamList = {
   SignIn: undefined;
   CommunityWrite: undefined | { id: string };
   CommunityDetail: { id: string };
+  CommunityCommentEdit: { id: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -75,6 +79,11 @@ const RootNavigator = () => {
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="CommunityWrite" component={CommunityWriteScreen} />
       <Stack.Screen name="CommunityDetail" component={CommunityDetailScreen} />
+      <Stack.Screen
+        name="CommunityCommentEdit"
+        component={CommunityCommentEditScreen}
+        options={{ headerTitle: '댓글 수정' }}
+      />
     </Stack.Navigator>
   );
 };

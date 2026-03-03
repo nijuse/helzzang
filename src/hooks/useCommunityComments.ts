@@ -37,11 +37,39 @@ export default function useCommunityComments(postId: string) {
       const rows = (data || []) as (CommunityComment & {
         users: { userName: string | null } | null;
       })[];
+      console.log('useCommunityComments rows ::', rows);
       return rows.map(({ users, ...row }) => ({
         ...row,
         userName: users?.userName ?? '익명',
       })) as CommunityComment[];
     },
     enabled: !!postId,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+}
+
+/**
+ * 특정 댓글 조회
+ * @param commentId - 조회할 댓글의 ID
+ */
+export function useCommunityComment(commentId: string) {
+  return useQuery<CommunityComment | null>({
+    queryKey: ['communityComment', commentId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('community_comments')
+        .select('*')
+        .eq('id', commentId)
+        .single();
+
+      if (error) {
+        console.error('댓글 조회 에러:', error);
+        throw error;
+      }
+
+      return data as CommunityComment;
+    },
+    enabled: !!commentId,
   });
 }
