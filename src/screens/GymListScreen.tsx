@@ -44,7 +44,7 @@ const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
   const setDayPassGymList = (_data: any[]) => {
     setGymList(
       _data
-        .map((gym: any) => ({
+        ?.map((gym: any) => ({
           ...gym,
           gym_price_info: {
             ...gym.gym_price_info,
