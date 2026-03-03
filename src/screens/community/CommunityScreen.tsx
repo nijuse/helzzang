@@ -43,6 +43,18 @@ const useStyles = makeStyles(theme => ({
     fontSize: 15,
     fontWeight: '600',
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: theme.colors.grey1,
+    textAlign: 'center',
+  },
 }));
 
 const CommunityScreen = () => {
@@ -62,7 +74,11 @@ const CommunityScreen = () => {
 
   return (
     <View style={styles.wrapper}>
-      <ScrollView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={
+          data && data?.length > 0 ? styles.container : styles.emptyContainer
+        }
+      >
         {data && data.length > 0 ? (
           data.map((post: CommunityPost) => (
             <CommunityItem
@@ -76,7 +92,7 @@ const CommunityScreen = () => {
             />
           ))
         ) : (
-          <Text>게시글이 없습니다.</Text>
+          <Text style={styles.emptyText}>게시글이 없습니다.</Text>
         )}
       </ScrollView>
 
