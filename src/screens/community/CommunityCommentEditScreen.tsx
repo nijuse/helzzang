@@ -1,4 +1,10 @@
-import { View, TextInput, Alert } from 'react-native';
+import {
+  View,
+  TextInput,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { makeStyles, Button } from '@rneui/themed';
 import { useEffect, useState } from 'react';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -103,33 +109,39 @@ const CommunityCommentEditScreen = () => {
   }, [comment]);
 
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.container}>
-        <View style={styles.textAreaWrapper}>
-          <TextInput
-            multiline
-            placeholder="내용을 입력하세요"
-            placeholderTextColor="#999"
-            style={styles.textArea}
-            scrollEnabled
-            textAlignVertical="top"
-            value={text}
-            onChangeText={setText}
+    <KeyboardAvoidingView
+      style={styles.wrapper}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 0}
+    >
+      <View style={styles.wrapper}>
+        <View style={styles.container}>
+          <View style={styles.textAreaWrapper}>
+            <TextInput
+              multiline
+              placeholder="내용을 입력하세요"
+              placeholderTextColor="#999"
+              style={styles.textArea}
+              scrollEnabled
+              textAlignVertical="top"
+              value={text}
+              onChangeText={setText}
+            />
+          </View>
+        </View>
+        <View style={styles.buttonWrapper}>
+          <Button
+            title={isPending ? '수정 중...' : '수정'}
+            type="solid"
+            size="lg"
+            titleStyle={styles.button}
+            onPress={handleUpdateComment}
+            disabled={isPending}
+            loading={isPending}
           />
         </View>
       </View>
-      <View style={styles.buttonWrapper}>
-        <Button
-          title={isPending ? '수정 중...' : '수정'}
-          type="solid"
-          size="lg"
-          titleStyle={styles.button}
-          onPress={handleUpdateComment}
-          disabled={isPending}
-          loading={isPending}
-        />
-      </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

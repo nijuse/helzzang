@@ -1,4 +1,10 @@
-import { ScrollView, View, Text, Pressable } from 'react-native';
+import {
+  ScrollView,
+  View,
+  Text,
+  Pressable,
+  ActivityIndicator,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -55,13 +61,19 @@ const useStyles = makeStyles(theme => ({
     color: theme.colors.grey1,
     textAlign: 'center',
   },
+  loading: {
+    color: theme.colors.primary,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 }));
 
 const CommunityScreen = () => {
   const styles = useStyles();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { data } = useCommunityPosts();
+  const { data, isPending } = useCommunityPosts();
 
   const handleWritePress = async () => {
     await supabase.auth.getSession();
@@ -72,6 +84,14 @@ const CommunityScreen = () => {
     // 로그인된 경우: 글쓰기 화면으로 이동 등 처리
     navigation.navigate('CommunityWrite');
   };
+
+  if (isPending) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color={styles.loading.color} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.wrapper}>

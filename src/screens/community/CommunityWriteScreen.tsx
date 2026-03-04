@@ -1,4 +1,10 @@
-import { View, TextInput, Alert } from 'react-native';
+import {
+  View,
+  TextInput,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { Input, makeStyles, Button } from '@rneui/themed';
 import { useEffect, useState } from 'react';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -125,43 +131,49 @@ const CommunityWriteScreen = () => {
   }, [post]);
 
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.container}>
-        <Input
-          placeholder="제목을 입력하세요"
-          placeholderTextColor="#999"
-          inputContainerStyle={styles.titleInputContainer}
-          inputStyle={styles.titleInput}
-          value={title}
-          onChangeText={setTitle}
-        />
-        <View style={styles.textAreaWrapper}>
-          <TextInput
-            multiline
-            placeholder="내용을 입력하세요"
+    <KeyboardAvoidingView
+      style={styles.wrapper}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 0}
+    >
+      <View style={styles.wrapper}>
+        <View style={styles.container}>
+          <Input
+            placeholder="제목을 입력하세요"
             placeholderTextColor="#999"
-            style={styles.textArea}
-            scrollEnabled
-            textAlignVertical="top"
-            value={content}
-            onChangeText={setContent}
+            inputContainerStyle={styles.titleInputContainer}
+            inputStyle={styles.titleInput}
+            value={title}
+            onChangeText={setTitle}
+          />
+          <View style={styles.textAreaWrapper}>
+            <TextInput
+              multiline
+              placeholder="내용을 입력하세요"
+              placeholderTextColor="#999"
+              style={styles.textArea}
+              scrollEnabled
+              textAlignVertical="top"
+              value={content}
+              onChangeText={setContent}
+            />
+          </View>
+        </View>
+        <View style={styles.buttonWrapper}>
+          <Button
+            title={
+              isPending || isUpdating ? '등록 중...' : post ? '수정' : '글쓰기'
+            }
+            type="solid"
+            size="lg"
+            titleStyle={styles.button}
+            onPress={handleUpdateCommunityPost}
+            disabled={isPending || isUpdating}
+            loading={isPending || isUpdating}
           />
         </View>
       </View>
-      <View style={styles.buttonWrapper}>
-        <Button
-          title={
-            isPending || isUpdating ? '등록 중...' : post ? '수정' : '글쓰기'
-          }
-          type="solid"
-          size="lg"
-          titleStyle={styles.button}
-          onPress={handleUpdateCommunityPost}
-          disabled={isPending || isUpdating}
-          loading={isPending || isUpdating}
-        />
-      </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
