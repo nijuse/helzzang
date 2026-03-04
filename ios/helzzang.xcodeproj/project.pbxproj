@@ -114,6 +114,7 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "helzzang" */;
 			buildPhases = (
 				09033D39714D991ADD7E9B3F /* [CP] Check Pods Manifest.lock */,
+				5A1A5B00C0D01A68108700A75B9A /* Copy Splash Logo */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -175,6 +176,22 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		5A1A5B00C0D01A68108700A75B9A /* Copy Splash Logo */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../assets/images/logo.png",
+			);
+			name = "Copy Splash Logo";
+			outputPaths = (
+				"$(SRCROOT)/helzzang/Images.xcassets/SplashLogo.imageset/logo.png",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "LOGO_SRC=\"${SRCROOT}/../assets/images/logo.png\"\nIMAGESET=\"${SRCROOT}/helzzang/Images.xcassets/SplashLogo.imageset\"\nif [ -f \"$LOGO_SRC\" ]; then\n  cp \"$LOGO_SRC\" \"${IMAGESET}/logo.png\"\n  cp \"$LOGO_SRC\" \"${IMAGESET}/logo@2x.png\"\n  cp \"$LOGO_SRC\" \"${IMAGESET}/logo@3x.png\"\nfi\n";
+		};
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

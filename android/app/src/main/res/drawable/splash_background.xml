@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 배경색 (원하면 android:color 수정) -->
+    <item android:drawable="@android:color/white" />
+    <!-- 중앙 로고: 커스텀 로고는 res/drawable/splash_logo.png 추가 후 src를 @drawable/splash_logo 로 변경 -->
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/splash_logo" />
+    </item>
+</layer-list>
