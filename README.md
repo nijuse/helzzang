@@ -52,26 +52,28 @@
 ### 3-1. 헬스장 목록 화면
 
 ```md
-![Gym List Screen](./assets/images/readme/gym-list.png)
+![Gym List Screen](./assets/images/readme/readme_home.png)
 ```
 
-### 3-2. 헬스장 상세 / 가격 정보
+### 3-2. 헬스장 가격 정보 목록
 
 ```md
-![Gym Detail Screen](./assets/images/readme/gym-detail.png)
+![Gym Detail Screen](./assets/images/readme/readme_membership.png)
+![Gym Detail Screen](./assets/images/readme/readme_daypass.png)
 ```
 
 ### 3-3. 커뮤니티 목록 화면
 
 ```md
-![Community Screen](./assets/images/readme/community-list.png)
+![Community Screen](./assets/images/readme/readme_community.png)
 ```
 
 ### 3-4. 커뮤니티 글쓰기 & 댓글
 
 ```md
-![Community Write Screen](./assets/images/readme/community-write.png)
-![Community Comment Screen](./assets/images/readme/community-comment.png)
+![Community Write Screen](./assets/images/readme/readme_post.png)
+![Community Comment Screen](./assets/images/readme/readme_comment.png)
+![Community create post Screen](./assets/images/readme/readme_create_post.png)
 ```
 
 ---
