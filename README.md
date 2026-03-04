@@ -52,29 +52,27 @@
 ### 3-1. 헬스장 목록 화면
 
 ```md
-![Gym List Screen](assets/images/readme/gym-list.png)
+![Gym List Screen](./assets/images/readme/gym-list.png)
 ```
 
 ### 3-2. 헬스장 상세 / 가격 정보
 
 ```md
-![Gym Detail Screen](assets/images/readme/gym-detail.png)
+![Gym Detail Screen](./assets/images/readme/gym-detail.png)
 ```
 
 ### 3-3. 커뮤니티 목록 화면
 
 ```md
-![Community Screen](assets/images/readme/community-list.png)
+![Community Screen](./assets/images/readme/community-list.png)
 ```
 
 ### 3-4. 커뮤니티 글쓰기 & 댓글
 
 ```md
-![Community Write Screen](assets/images/readme/community-write.png)
-![Community Comment Screen](assets/images/readme/community-comment.png)
+![Community Write Screen](./assets/images/readme/community-write.png)
+![Community Comment Screen](./assets/images/readme/community-comment.png)
 ```
-
-> 필요하다면 AI 비교 화면, 로그인 화면 등도 같은 폴더 내 이미지를 추가로 연결하면 됩니다.
 
 ---
 
@@ -195,7 +193,6 @@ bun run ios
   - Supabase 설정(SUPABASE_URL, SUPABASE_ANON_KEY)이 올바른지 확인합니다.
 
 ---
-
 
 ## 8. 참고 자료
 
