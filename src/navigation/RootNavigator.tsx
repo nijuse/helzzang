@@ -18,7 +18,7 @@ import CommunityDetailScreen from '../screens/community/CommunityDetailScreen';
 import CommunityCommentEditScreen from '../screens/community/CommunityCommentEditScreen';
 
 import { colors } from '../../themed';
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -40,12 +40,23 @@ const GymListScreenWrapper = ({
 );
 
 const LogoHeader = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'Home'>>();
+
   return (
-    <Image
-      source={require('../../assets/images/logo2.png')}
-      style={styles.logo}
-      resizeMode="contain"
-    />
+    <Pressable
+      onPress={() => {
+        if (route.name === 'Home') return;
+        navigation.navigate('Home');
+      }}
+    >
+      <Image
+        source={require('../../assets/images/logo2.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+    </Pressable>
   );
 };
 
@@ -66,7 +77,7 @@ const RootNavigator = () => {
         headerBackTitleVisible: false,
         headerTintColor: colors.primary,
         headerLeft: () =>
-          navigation.canGoBack() ? (
+          navigation.canGoBack() && route.name !== 'Home' ? (
             <Pressable onPress={() => navigation.goBack()}>
               <Ionicons name="chevron-back" size={36} color={colors.primary} />
             </Pressable>
