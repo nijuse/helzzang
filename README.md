@@ -1,8 +1,6 @@
 # 헬짱(helzzang)
 
-내 주변 헬스장을 쉽고 빠르게 찾고, 가격과 후기, 운동 정보를 한 곳에서 확인할 수 있는 **React Native 기반 헬스장 탐색 & 커뮤니티 앱**입니다.
-
-이 README는 [**좋은 README 작성 가이드**](https://insight.infograb.net/blog/2023/08/23/good-readme/)를 참고해 작성되었습니다.
+내 주변 헬스장을 쉽고 빠르게 찾고, 헬스장 가격을 알아보고 후기 및 운동 정보를 나눌 수 있는 **헬스장 탐색 & 커뮤니티 앱**입니다.
 
 ---
 
@@ -16,8 +14,8 @@
 
 헬짱은 아래 기능을 통해 이런 문제를 해결합니다.
 
-- 내 현재 위치 기준으로 **주변 헬스장 목록**을 조회
-- 헬스장별 **일일권 가격 정보 노출** (운동닥터 API에 가격 데이터가 없을 경우, 합리적인 범위의 **임의 가격을 표시**)
+- 내 현재 위치 기준으로 **주변 헬스장 목록**을 조회(운동닥터 (https://www.woondoc.com/) API 활용)
+- 헬스장별 **일일권 가격 정보 노출** (운동닥터 API에 가격 데이터가 없을 경우, 합리적인 범위의 임의 가격을 표시)
 - **커뮤니티 게시글 & 댓글**을 통해 운동 Q&A, 헬스장 후기 공유
 - **Google 로그인 사용자만** 커뮤니티 글/댓글 작성 및 수정·삭제 가능
 
@@ -33,7 +31,6 @@
 - **헬스장 가격 정보**
 
   - API로 일일권 가격을 받아오면 그대로 노출합니다.
-  - **일일권 가격 데이터가 없을 경우**, 앱 내부에서 정의한 **임의의 가격**을 표시해 사용자가 대략적인 가격 수준을 가늠할 수 있도록 합니다.
 
 - **커뮤니티 (게시글 & 댓글)**
 
@@ -43,7 +40,6 @@
 
 - **인증 및 데이터 저장**
   - 인증 및 커뮤니티 데이터(게시글, 댓글)는 **Supabase**를 사용해 관리합니다.
-  - 클라이언트에서는 `@supabase/supabase-js`와 커스텀 훅(`useSupabaseAuth`, `useCommunityPosts`, `useCommunityComments` 등)을 통해 구현되어 있습니다.
 
 ---
 
@@ -65,7 +61,7 @@
 ### 3-4. 커뮤니티 글쓰기 & 댓글
 
 <img src="./assets/images/readme/readme_post.png" alt="Community Write Screen" width="320" />
-<img src="./assets/images/readme/readme_comment.png" alt="Community Comment Screen" width="320" />
+<img src="./assets/images/readme/readme_post_comment.png" alt="Community Comment Screen" width="320" />
 <img src="./assets/images/readme/readme_create_post.png" alt="Community create post Screen" width="320" />
 
 ---
@@ -182,14 +178,8 @@ bun run ios
 ## 7. 자주 발생할 수 있는 문제 & 해결 방법
 
 - **빌드/실행 시 네트워크 관련 에러**
-
-  - `.env` 파일에 운동닥터 API, Supabase 관련 환경 변수가 제대로 설정되어 있는지 확인합니다.
+  - `.env` 파일에 Supabase 관련 환경 변수가 제대로 설정되어 있는지 확인합니다.
   - Android 에뮬레이터/실기기에서 네트워크 권한이 허용되어 있는지 확인합니다.
-
-- **주변 헬스장 목록이 보이지 않는 경우**
-
-  - 위치 권한이 허용되었는지 확인합니다.
-  - 위치가 한국 내에 있는지 확인합니다.
 
 - **커뮤니티 글/댓글 작성이 되지 않는 경우**
   - Google 로그인이 완료되었는지 확인합니다.
