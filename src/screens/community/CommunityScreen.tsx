@@ -62,6 +62,7 @@ const CommunityScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data } = useCommunityPosts();
+
   const handleWritePress = async () => {
     await supabase.auth.getSession();
     // if (!session) {

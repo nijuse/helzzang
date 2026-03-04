@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   createNativeStackNavigator,
+  NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 import { StyleSheet, Image, Pressable } from 'react-native';
@@ -32,7 +33,6 @@ export type RootStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
 const GymListScreenWrapper = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'GymList'>) => (
@@ -50,7 +50,9 @@ const LogoHeader = () => {
 };
 
 const RootNavigator = () => {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   return (
     <Stack.Navigator
       initialRouteName="Home"

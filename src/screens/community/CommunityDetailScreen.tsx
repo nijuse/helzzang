@@ -14,7 +14,7 @@ import { formatRelativeTime } from '../../lib/utils';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { supabase } from '../../lib/supabase';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useLayoutEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import useCommunityComments from '../../hooks/useCommunityComments';
 import useSupabaseAuth from '../../hooks/useSupabaseAuth';
@@ -47,6 +47,16 @@ const useStyles = makeStyles(theme => ({
     fontSize: 16,
     color: theme.colors.grey1,
     textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  retryButtonText: {
+    fontSize: 16,
+    color: theme.colors.primary,
+    fontWeight: '600',
   },
   scroll: {
     flex: 1,
@@ -146,13 +156,22 @@ const CommunityDetailScreen = () => {
   const { id } = route.params;
   const { user } = useSupabaseAuth();
   const userId = user?.id ?? 'e6530a3d-99fa-4951-bbfc-e98e4c2d055c';
-  const { data: post, isLoading, isError, error } = useCommunityPost(id);
+  const {
+    data: post,
+    isLoading,
+    isError,
+    error,
+    refetch: refetchPost,
+  } = useCommunityPost(id);
   const { data: comments, refetch: refetchComments } = useCommunityComments(id);
 
   const [comment, setComment] = useState('');
   const queryClient = useQueryClient();
 
   const queryReset = useCallback(() => {
+    queryClient.refetchQueries({
+      queryKey: ['communityPosts'],
+    });
     queryClient.invalidateQueries({
       queryKey: ['communityComments', id],
     });
@@ -161,30 +180,86 @@ const CommunityDetailScreen = () => {
     });
   }, [id, queryClient]);
 
+  const handleDeletePost = useCallback(
+    (postId: string) => {
+      Alert.alert('게시글 삭제', '정말 게시글을 삭제하시겠습니까?', [
+        {
+          text: '취소',
+          style: 'cancel',
+          onPress: () => {
+            return;
+          },
+        },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const { error: deleteError } = await supabase
+                .from('community')
+                .delete()
+                .eq('id', postId);
+              if (deleteError) {
+                console.error('게시글 삭제 에러:', deleteError);
+                throw deleteError;
+              }
+              queryClient.invalidateQueries({ queryKey: ['communityPosts'] });
+              queryClient.invalidateQueries({
+                queryKey: ['communityPost', postId],
+              });
+              navigation.goBack();
+            } catch (err) {
+              Alert.alert(
+                '게시글 삭제 실패',
+                (err as Error).message || '다시 시도해 주세요.',
+              );
+            }
+          },
+        },
+      ]);
+    },
+    [navigation, queryClient],
+  );
+
   const handleEditComment = (commentId: string) => {
     queryReset();
     navigation.navigate('CommunityCommentEdit', { id: commentId });
   };
 
   const handleDeleteComment = async (commentId: string) => {
-    try {
-      const { error: deleteError } = await supabase
-        .from('community_comments')
-        .delete()
-        .eq('id', commentId);
+    Alert.alert('댓글 삭제', '댓글을 삭제하시겠습니까?', [
+      {
+        text: '취소',
+        style: 'cancel',
+        onPress: () => {
+          return;
+        },
+      },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const { error: deleteError } = await supabase
+              .from('community_comments')
+              .delete()
+              .eq('id', commentId);
 
-      if (deleteError) {
-        console.error('댓글 삭제 에러:', deleteError);
-        throw deleteError;
-      }
-      queryReset();
-      refetchComments();
-    } catch (err) {
-      Alert.alert(
-        '댓글 삭제 실패',
-        (err as Error).message || '다시 시도해 주세요.',
-      );
-    }
+            if (deleteError) {
+              console.error('댓글 삭제 에러:', deleteError);
+              throw deleteError;
+            }
+            queryReset();
+            refetchComments();
+          } catch (err) {
+            Alert.alert(
+              '댓글 삭제 실패',
+              (err as Error).message || '다시 시도해 주세요.',
+            );
+          }
+        },
+      },
+    ]);
   };
 
   const handleAddComment = async () => {
@@ -193,9 +268,9 @@ const CommunityDetailScreen = () => {
         data: { session },
       } = await supabase.auth.getSession();
 
-      const userId =
+      const sessionUserId =
         session?.user?.id ?? 'e6530a3d-99fa-4951-bbfc-e98e4c2d055c';
-      if (!userId) {
+      if (!sessionUserId) {
         throw new Error('로그인이 필요합니다.');
       }
 
@@ -203,7 +278,7 @@ const CommunityDetailScreen = () => {
         .from('community_comments')
         .insert({
           comment: comment.trim(),
-          userId: userId,
+          userId: sessionUserId,
           postId: id,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -229,52 +304,63 @@ const CommunityDetailScreen = () => {
     }
   };
 
-  const handleDeletePost = async () => {
-    Alert.alert('게시글 삭제', '정말 게시글을 삭제하시겠습니까?', [
-      {
-        text: '취소',
-        style: 'cancel',
-        onPress: () => {
-          return;
-        },
-      },
-      {
-        text: '삭제',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            const { error: deleteError } = await supabase
-              .from('community')
-              .delete()
-              .eq('id', id);
-            if (deleteError) {
-              console.error('게시글 삭제 에러:', deleteError);
-              throw deleteError;
-            }
-            // 커뮤니티 목록 및 단일 게시글 캐시 무효화 후 목록으로 이동
-            queryClient.invalidateQueries({ queryKey: ['communityPosts'] });
-            queryClient.invalidateQueries({ queryKey: ['communityPost', id] });
-            navigation.goBack();
-          } catch (err) {
-            Alert.alert(
-              '게시글 삭제 실패',
-              (err as Error).message || '다시 시도해 주세요.',
-            );
-          }
-        },
-      },
-    ]);
-  };
-
-  const handleEditPress = async () => {
+  const handleEditPress = useCallback(async () => {
     await supabase.auth.getSession();
     // if (!session) {
     //   navigation.navigate('SignIn');
     //   return;
     // }
     // 로그인된 경우: 글쓰기 화면으로 이동 등 처리
-    navigation.navigate('CommunityWrite', { id: id });
-  };
+    navigation.navigate('CommunityWrite', { id });
+  }, [id, navigation]);
+
+  /**
+   * 헤더 - 게시글 수정/삭제 버튼 표시
+   */
+  useLayoutEffect(() => {
+    if (!post || post.userId !== userId) {
+      navigation.setOptions({
+        headerRight: () => null,
+      });
+      return;
+    }
+
+    navigation.setOptions({
+      headerRight: () => (
+        <View
+          style={{
+            flexDirection: 'row',
+            gap: 16,
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Pressable onPress={handleEditPress}>
+            <Ionicons
+              name="pencil"
+              size={24}
+              color={styles.commentInputIcon.color}
+            />
+          </Pressable>
+          <Pressable onPress={() => handleDeletePost(id)}>
+            <Ionicons
+              name="trash"
+              size={24}
+              color={styles.commentInputIcon.color}
+            />
+          </Pressable>
+        </View>
+      ),
+    });
+  }, [
+    handleDeletePost,
+    handleEditPress,
+    id,
+    navigation,
+    post,
+    userId,
+    styles.commentInputIcon.color,
+  ]);
 
   useEffect(() => {
     queryReset();
@@ -297,6 +383,15 @@ const CommunityDetailScreen = () => {
           <Text style={styles.errorText}>
             {error?.message || '게시글을 불러올 수 없습니다.'}
           </Text>
+          <Pressable
+            onPress={() => {
+              refetchPost();
+              refetchComments();
+            }}
+            style={styles.retryButton}
+          >
+            <Text style={styles.retryButtonText}>다시 시도</Text>
+          </Pressable>
         </View>
       </View>
     );
@@ -334,9 +429,6 @@ const CommunityDetailScreen = () => {
             <Text style={styles.commentCount}>
               댓글 {post.commentCount ?? 0}
             </Text>
-            <Pressable onPress={handleDeletePost}>
-              <Text>삭제</Text>
-            </Pressable>
           </View>
         </View>
         <View>
@@ -414,18 +506,6 @@ const CommunityDetailScreen = () => {
           </Pressable>
         )}
       </View>
-      {post.userId === userId && (
-        <Pressable
-          style={({ pressed }) => [
-            styles.editButton,
-            pressed && styles.editButtonPressed,
-          ]}
-          onPress={handleEditPress}
-        >
-          <Ionicons name="pencil" size={20} color={'#fff'} />
-          <Text style={styles.editButtonText}>수정</Text>
-        </Pressable>
-      )}
     </View>
   );
 };
