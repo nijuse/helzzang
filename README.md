@@ -56,7 +56,7 @@
 ### 3-2. 헬스장 가격 정보 목록
 
 <img src="./assets/images/readme/readme_membership.png" alt="Gym Detail Screen (membership)" width="320" />
-<img src="./assets/images/readme/readme_daypass.png" alt="Gym Detail Screen (daypass)" width="320" />
+<img src="./assets/images/readme/readme_female.png" alt="Gym Detail Screen (female)" width="320" />
 
 ### 3-3. 커뮤니티 목록 화면
 
@@ -76,6 +76,15 @@
 
 - **Node.js**: `>= 20`
 - **패키지 매니저**: Bun
+  - macOS (Homebrew):
+    ```sh
+    brew install oven-sh/bun/bun
+    ```
+  - 공통(공식 설치 스크립트):
+    ```sh
+    curl -fsSL https://bun.sh/install | bash
+    ```
+  - 설치 후 터미널을 다시 열거나, 안내되는 대로 `PATH` 설정을 반영해 주세요.
 - **React Native 개발 환경 설정**
   - Xcode & CocoaPods (iOS 빌드용, macOS 환경)
   - 자세한 내용은 React Native 공식 문서의 [환경 설정 가이드](https://reactnative.dev/docs/environment-setup)를 참고하세요.
@@ -84,10 +93,12 @@
 
 - **Supabase**
   - Google OAuth 및 커뮤니티 데이터 저장에 사용합니다.
-  - 다음과 같은 환경 변수를 설정해야 합니다. (예시)
+  - 다음과 같은 환경 변수를 설정해야 합니다.
     - `SUPABASE_URL`
     - `SUPABASE_ANON_KEY`
-    - (선택) `GOOGLE_CLIENT_ID` 등
+- **Google**
+  - Google OAuth 사용을 위해 다음과 같은 환경 변수를 설정해야 합니다.
+    - `GOOGLE_CLIENT_SECRET`
 
 ---
 
@@ -96,20 +107,19 @@
 ### 5-1. 의존성 설치
 
 ```sh
-# 패키지 설치
+# 패키지 설치 (bun)
 bun install
 ```
 
 ### 5-2. 환경 변수 설정
 
-프로젝트 루트에 `.env` 파일을 생성하고, Supabase 관련 키를 설정합니다.
+프로젝트 루트에 `.env` 파일을 생성하고, Supabase 관련 키와 Google Client Secret 키를 설정합니다.
 
 ```env
 SUPABASE_URL=...
 SUPABASE_ANON_KEY=...
+GOOGLE_CLIENT_SECRET=...
 ```
-
-필요하다면 Google 로그인 관련 설정도 함께 추가합니다.
 
 ### 5-3. Metro 번들러 실행
 
@@ -150,9 +160,8 @@ bun run ios
 
 2. **주변 헬스장 목록 확인**
 
-   - `GymListScreen`에서 내 주변 헬스장 리스트를 확인할 수 있습니다.
+   - 홈 화면과 헬스장 목록 화면에서 내 주변 헬스장 리스트를 확인할 수 있습니다.
    - 위치 권한을 허용하지 않으면 기본 위치(강남역)을 기준으로 주변 헬스장 목록을 조회합니다.
-   <!-- - 각 헬스장을 선택하면 상세 정보 및 일일권 가격(또는 임의 가격)을 볼 수 있습니다. -->
 
 3. **Google 로그인**
 
@@ -193,3 +202,4 @@ bun run ios
 - [좋은 README 작성하는 방법 (InfoGrab 블로그)](https://insight.infograb.net/blog/2023/08/23/good-readme/)
 - [React Native 공식 문서](https://reactnative.dev)
 - [Supabase 공식 문서](https://supabase.com/docs)
+- [React Native Elements](https://reactnativeelements.com/docs)
