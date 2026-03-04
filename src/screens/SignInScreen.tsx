@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   View,
-  Image,
   StyleSheet,
   Linking,
   AppState,
@@ -94,9 +93,12 @@ const SignInScreen = () => {
         pollSession();
       };
 
-      const appStateSub = AppState.addEventListener('change', (state: AppStateStatus) => {
-        if (state === 'active') onAppActive();
-      });
+      const appStateSub = AppState.addEventListener(
+        'change',
+        (state: AppStateStatus) => {
+          if (state === 'active') onAppActive();
+        },
+      );
       if (AppState.currentState === 'active') onAppActive();
 
       return () => {
@@ -139,10 +141,6 @@ const SignInScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../assets/images/logo.png')}
-        style={styles.logo}
-      />
       <Button
         title={'Sign in with Google'}
         onPress={signInWithGoogle}
