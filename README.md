@@ -51,22 +51,22 @@
 
 ### 3-1. 헬스장 목록 화면
 
-![Gym List Screen](./assets/images/readme/readme_home.png)
+<img src="./assets/images/readme/readme_home.png" alt="Gym List Screen" width="320" />
 
 ### 3-2. 헬스장 가격 정보 목록
 
-![Gym Detail Screen](./assets/images/readme/readme_membership.png)
-![Gym Detail Screen](./assets/images/readme/readme_daypass.png)
+<img src="./assets/images/readme/readme_membership.png" alt="Gym Detail Screen (membership)" width="320" />
+<img src="./assets/images/readme/readme_daypass.png" alt="Gym Detail Screen (daypass)" width="320" />
 
 ### 3-3. 커뮤니티 목록 화면
 
-![Community Screen](./assets/images/readme/readme_community.png)
+<img src="./assets/images/readme/readme_community.png" alt="Community Screen" width="320" />
 
 ### 3-4. 커뮤니티 글쓰기 & 댓글
 
-![Community Write Screen](./assets/images/readme/readme_post.png)
-![Community Comment Screen](./assets/images/readme/readme_comment.png)
-![Community create post Screen](./assets/images/readme/readme_create_post.png)
+<img src="./assets/images/readme/readme_post.png" alt="Community Write Screen" width="320" />
+<img src="./assets/images/readme/readme_comment.png" alt="Community Comment Screen" width="320" />
+<img src="./assets/images/readme/readme_create_post.png" alt="Community create post Screen" width="320" />
 
 ---
 
