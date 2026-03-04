@@ -21,7 +21,6 @@ const useStyles = makeStyles(theme => ({
     flex: 1,
   },
   container: {
-    flex: 1,
     padding: 24,
   },
   fab: {
@@ -94,11 +93,13 @@ const CommunityScreen = () => {
   }
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper]}>
       <ScrollView
-        contentContainerStyle={
-          data && data?.length > 0 ? styles.container : styles.emptyContainer
-        }
+        style={styles.wrapper}
+        contentContainerStyle={[
+          data && data.length > 0 ? styles.container : styles.emptyContainer,
+          data && data.length >= 4 && { paddingBottom: 100 },
+        ]}
       >
         {data && data.length > 0 ? (
           data.map((post: CommunityPost) => (
