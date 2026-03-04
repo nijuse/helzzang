@@ -5,6 +5,8 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Input, makeStyles } from '@rneui/themed';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
@@ -398,115 +400,123 @@ const CommunityDetailScreen = () => {
   }
 
   return (
-    <View style={styles.wrapper}>
-      <ScrollView style={styles.container}>
-        <View>
-          <View style={styles.titleWrapper}>
-            <Text style={styles.title}>{post.title}</Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-              }}
-            >
-              <Text style={styles.userName}>{post.userName ?? '익명'}</Text>
-              <Text style={styles.createdAt}>
-                {formatRelativeTime(
-                  post.createdAt === post.updatedAt
-                    ? post.createdAt
-                    : post.updatedAt ?? '',
-                )}
-                {post.createdAt !== post.updatedAt && (
-                  <Text style={styles.createdAt}>(편집)</Text>
-                )}
-              </Text>
-            </View>
-          </View>
-          <Text style={styles.body}>{post.content}</Text>
-          <View style={styles.meta}>
-            <Text style={styles.commentCount}>
-              댓글 {post.commentCount ?? 0}
-            </Text>
-          </View>
-        </View>
-        <View>
-          {comments?.map(commentItem => (
-            <View
-              key={commentItem.id}
-              style={{
-                gap: 8,
-                paddingVertical: 16,
-                borderBottomWidth: 1,
-                borderColor: styles.meta.borderColor,
-              }}
-            >
+    <KeyboardAvoidingView
+      style={styles.wrapper}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 0}
+    >
+      <View style={styles.wrapper}>
+        <ScrollView style={styles.container}>
+          <View>
+            <View style={styles.titleWrapper}>
+              <Text style={styles.title}>{post.title}</Text>
               <View
                 style={{
                   flexDirection: 'row',
+                  alignItems: 'center',
                   justifyContent: 'space-between',
+                  width: '100%',
                 }}
               >
-                <Text>{commentItem.userName}</Text>
-                <Text style={{ color: styles.commentCount.color }}>
-                  {formatRelativeTime(commentItem.createdAt)}
+                <Text style={styles.userName}>{post.userName ?? '익명'}</Text>
+                <Text style={styles.createdAt}>
+                  {formatRelativeTime(
+                    post.createdAt === post.updatedAt
+                      ? post.createdAt
+                      : post.updatedAt ?? '',
+                  )}
+                  {post.createdAt !== post.updatedAt && (
+                    <Text style={styles.createdAt}>(편집)</Text>
+                  )}
                 </Text>
               </View>
-              <Text>{commentItem.comment}</Text>
-              {commentItem.userId === userId && (
+            </View>
+            <Text style={styles.body}>{post.content}</Text>
+            <View style={styles.meta}>
+              <Text style={styles.commentCount}>
+                댓글 {post.commentCount ?? 0}
+              </Text>
+            </View>
+          </View>
+          <View>
+            {comments?.map(commentItem => (
+              <View
+                key={commentItem.id}
+                style={{
+                  gap: 8,
+                  paddingVertical: 16,
+                  borderBottomWidth: 1,
+                  borderColor: styles.meta.borderColor,
+                }}
+              >
                 <View
                   style={{
                     flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    marginTop: 8,
-                    gap: 8,
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <Pressable onPress={() => handleEditComment(commentItem.id)}>
-                    <Text>수정</Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => handleDeleteComment(commentItem.id)}
-                  >
-                    <Text>삭제</Text>
-                  </Pressable>
+                  <Text>{commentItem.userName}</Text>
+                  <Text style={{ color: styles.commentCount.color }}>
+                    {formatRelativeTime(commentItem.createdAt)}
+                  </Text>
                 </View>
-              )}
-            </View>
-          ))}
+                <Text>{commentItem.comment}</Text>
+                {commentItem.userId === userId && (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'flex-end',
+                      marginTop: 8,
+                      gap: 8,
+                    }}
+                  >
+                    <Pressable
+                      onPress={() => handleEditComment(commentItem.id)}
+                    >
+                      <Text>수정</Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => handleDeleteComment(commentItem.id)}
+                    >
+                      <Text>삭제</Text>
+                    </Pressable>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+        <View style={styles.commentInputWrapper}>
+          <Input
+            placeholder="댓글을 입력하세요"
+            containerStyle={{
+              flex: 1,
+              paddingHorizontal: 0,
+            }}
+            inputContainerStyle={{
+              borderRadius: 100,
+              height: 44,
+              paddingHorizontal: 16,
+            }}
+            inputStyle={{
+              paddingVertical: 0,
+            }}
+            value={comment}
+            onChangeText={setComment}
+          />
+          {comment?.trim()?.length > 0 && (
+            <Pressable onPress={handleAddComment} style={{ marginBottom: 26 }}>
+              <Ionicons
+                name="send"
+                size={32}
+                color={styles.commentInputIcon.color}
+              />
+            </Pressable>
+          )}
         </View>
-      </ScrollView>
-      <View style={styles.commentInputWrapper}>
-        <Input
-          placeholder="댓글을 입력하세요"
-          containerStyle={{
-            flex: 1,
-            paddingHorizontal: 0,
-          }}
-          inputContainerStyle={{
-            borderRadius: 100,
-            height: 44,
-            paddingHorizontal: 16,
-          }}
-          inputStyle={{
-            paddingVertical: 0,
-          }}
-          value={comment}
-          onChangeText={setComment}
-        />
-        {comment?.trim()?.length > 0 && (
-          <Pressable onPress={handleAddComment} style={{ marginBottom: 26 }}>
-            <Ionicons
-              name="send"
-              size={32}
-              color={styles.commentInputIcon.color}
-            />
-          </Pressable>
-        )}
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
