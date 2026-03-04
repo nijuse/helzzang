@@ -206,9 +206,6 @@ const CommunityDetailScreen = () => {
                 throw deleteError;
               }
               queryClient.invalidateQueries({ queryKey: ['communityPosts'] });
-              queryClient.invalidateQueries({
-                queryKey: ['communityPost', postId],
-              });
               navigation.goBack();
             } catch (err) {
               Alert.alert(

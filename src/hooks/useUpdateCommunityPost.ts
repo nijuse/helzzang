@@ -38,6 +38,9 @@ export default function useUpdateCommunityPost() {
       queryClient.invalidateQueries({
         queryKey: ['communityPost', variables.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['communityPosts'],
+      });
     },
   });
 }
