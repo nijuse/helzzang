@@ -107,6 +107,18 @@ android {
     }
 }
 
+// 스플래시 로고: assets/images/logo.png → res/drawable/splash_logo.png
+def splashLogo = file("${rootProject.projectDir}/../assets/images/logo.png")
+if (splashLogo.exists()) {
+    tasks.register("copySplashLogo", Copy) {
+        from splashLogo
+        into file("src/main/res/drawable")
+        rename "logo.png", "splash_logo.png"
+    }
+    tasks.named("mergeDebugResources").configure { dependsOn "copySplashLogo" }
+    tasks.named("mergeReleaseResources").configure { dependsOn "copySplashLogo" }
+}
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
