@@ -12,6 +12,7 @@ import { RootStackParamList } from '../../navigation/RootNavigator';
 import { useCommunityPost } from '../../hooks/useCommunityPosts';
 import useCreateCommunityPost from '../../hooks/useCreateCommunityPost';
 import useUpdateCommunityPost from '../../hooks/useUpdateCommunityPost';
+import useSupabaseAuth from '../../hooks/useSupabaseAuth';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -81,18 +82,25 @@ const CommunityWriteScreen = () => {
     useUpdateCommunityPost();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const { user } = useSupabaseAuth();
 
   const handleUpdateCommunityPost = () => {
+    if (!user?.id) {
+      Alert.alert('로그인이 필요합니다.');
+      return;
+    }
     if (!title.trim() || !content.trim()) {
       Alert.alert('제목과 내용을 입력해주세요.');
       return;
     }
+
     if (post && post.id) {
       updateCommunityPost(
         {
           id: post.id,
           title: title.trim(),
           content: content.trim(),
+          userId: user.id,
         },
         {
           onSuccess: () => {
@@ -108,7 +116,7 @@ const CommunityWriteScreen = () => {
       );
     } else {
       createCommunityPost(
-        { title: title.trim(), content: content.trim() },
+        { title: title.trim(), content: content.trim(), userId: user.id },
         {
           onSuccess: () => {
             Alert.alert('등록 완료', '게시글이 등록되었습니다.', [

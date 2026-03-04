@@ -157,7 +157,6 @@ const CommunityDetailScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'CommunityDetail'>>();
   const { id } = route.params;
   const { user } = useSupabaseAuth();
-  const userId = user?.id ?? 'e6530a3d-99fa-4951-bbfc-e98e4c2d055c';
   const {
     data: post,
     isLoading,
@@ -181,44 +180,6 @@ const CommunityDetailScreen = () => {
       queryKey: ['communityPost', id],
     });
   }, [id, queryClient]);
-
-  const handleDeletePost = useCallback(
-    (postId: string) => {
-      Alert.alert('게시글 삭제', '정말 게시글을 삭제하시겠습니까?', [
-        {
-          text: '취소',
-          style: 'cancel',
-          onPress: () => {
-            return;
-          },
-        },
-        {
-          text: '삭제',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const { error: deleteError } = await supabase
-                .from('community')
-                .delete()
-                .eq('id', postId);
-              if (deleteError) {
-                console.error('게시글 삭제 에러:', deleteError);
-                throw deleteError;
-              }
-              queryClient.invalidateQueries({ queryKey: ['communityPosts'] });
-              navigation.goBack();
-            } catch (err) {
-              Alert.alert(
-                '게시글 삭제 실패',
-                (err as Error).message || '다시 시도해 주세요.',
-              );
-            }
-          },
-        },
-      ]);
-    },
-    [navigation, queryClient],
-  );
 
   const handleEditComment = (commentId: string) => {
     queryReset();
@@ -263,21 +224,14 @@ const CommunityDetailScreen = () => {
 
   const handleAddComment = async () => {
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      const sessionUserId =
-        session?.user?.id ?? 'e6530a3d-99fa-4951-bbfc-e98e4c2d055c';
-      if (!sessionUserId) {
-        throw new Error('로그인이 필요합니다.');
+      if (!user?.id) {
+        return Alert.alert('로그인이 필요합니다.');
       }
-
       const { error: insertError } = await supabase
         .from('community_comments')
         .insert({
           comment: comment.trim(),
-          userId: sessionUserId,
+          userId: user.id,
           postId: id,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -303,13 +257,48 @@ const CommunityDetailScreen = () => {
     }
   };
 
-  const handleEditPress = useCallback(async () => {
-    await supabase.auth.getSession();
-    // if (!session) {
-    //   navigation.navigate('SignIn');
-    //   return;
-    // }
-    // 로그인된 경우: 글쓰기 화면으로 이동 등 처리
+  const handleDeletePost = useCallback(
+    (postId: string) => {
+      Alert.alert('게시글 삭제', '정말 게시글을 삭제하시겠습니까?', [
+        {
+          text: '취소',
+          style: 'cancel',
+          onPress: () => {
+            return;
+          },
+        },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const { error: deleteError } = await supabase
+                .from('community')
+                .delete()
+                .eq('id', postId);
+              if (deleteError) {
+                console.error('게시글 삭제 에러:', deleteError);
+                throw deleteError;
+              }
+              queryClient.invalidateQueries({ queryKey: ['communityPosts'] });
+              navigation.goBack();
+            } catch (err) {
+              Alert.alert(
+                '게시글 삭제 실패',
+                (err as Error).message || '다시 시도해 주세요.',
+              );
+            }
+          },
+        },
+      ]);
+    },
+    [navigation, queryClient],
+  );
+
+  /**
+   * 수정 버튼 클릭 시, 게시글 수정 페이지로 이동
+   */
+  const handleEditPost = useCallback(async () => {
     navigation.navigate('CommunityWrite', { id });
   }, [id, navigation]);
 
@@ -317,7 +306,7 @@ const CommunityDetailScreen = () => {
    * 헤더 - 게시글 수정/삭제 버튼 표시
    */
   useLayoutEffect(() => {
-    if (!post || post.userId !== userId) {
+    if (!post || post.userId !== user?.id || !user) {
       navigation.setOptions({
         headerRight: () => null,
       });
@@ -334,7 +323,7 @@ const CommunityDetailScreen = () => {
             justifyContent: 'flex-end',
           }}
         >
-          <Pressable onPress={handleEditPress}>
+          <Pressable onPress={handleEditPost}>
             <Ionicons
               name="pencil"
               size={24}
@@ -353,12 +342,12 @@ const CommunityDetailScreen = () => {
     });
   }, [
     handleDeletePost,
-    handleEditPress,
+    handleEditPost,
     id,
     navigation,
     post,
-    userId,
     styles.commentInputIcon.color,
+    user,
   ]);
 
   useEffect(() => {
@@ -458,7 +447,7 @@ const CommunityDetailScreen = () => {
                   </Text>
                 </View>
                 <Text>{commentItem.comment}</Text>
-                {commentItem.userId === userId && (
+                {commentItem.userId === user?.id && (
                   <View
                     style={{
                       flexDirection: 'row',
@@ -484,34 +473,42 @@ const CommunityDetailScreen = () => {
             ))}
           </View>
         </ScrollView>
-        <View style={styles.commentInputWrapper}>
-          <Input
-            placeholder="댓글을 입력하세요"
-            containerStyle={{
-              flex: 1,
-              paddingHorizontal: 0,
-            }}
-            inputContainerStyle={{
-              borderRadius: 100,
-              height: 44,
-              paddingHorizontal: 16,
-            }}
-            inputStyle={{
-              paddingVertical: 0,
-            }}
-            value={comment}
-            onChangeText={setComment}
-          />
-          {comment?.trim()?.length > 0 && (
-            <Pressable onPress={handleAddComment} style={{ marginBottom: 26 }}>
-              <Ionicons
-                name="send"
-                size={32}
-                color={styles.commentInputIcon.color}
-              />
-            </Pressable>
-          )}
-        </View>
+        {user && user?.id && (
+          <View style={styles.commentInputWrapper}>
+            <Input
+              placeholder="댓글을 입력하세요"
+              containerStyle={{
+                flex: 1,
+                paddingHorizontal: 0,
+              }}
+              inputContainerStyle={{
+                borderRadius: 100,
+                height: 44,
+                paddingHorizontal: 16,
+              }}
+              inputStyle={{
+                paddingVertical: 0,
+              }}
+              value={comment}
+              onChangeText={setComment}
+              onFocus={() => {
+                console.log('onFocus');
+              }}
+            />
+            {comment?.trim()?.length > 0 && (
+              <Pressable
+                onPress={handleAddComment}
+                style={{ marginBottom: 26 }}
+              >
+                <Ionicons
+                  name="send"
+                  size={32}
+                  color={styles.commentInputIcon.color}
+                />
+              </Pressable>
+            )}
+          </View>
+        )}
       </View>
     </KeyboardAvoidingView>
   );

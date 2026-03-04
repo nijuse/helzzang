@@ -5,6 +5,7 @@ export type UpdateCommunityPostInput = {
   id: string;
   title: string;
   content: string;
+  userId: string;
 };
 
 /**
@@ -17,12 +18,13 @@ export default function useUpdateCommunityPost() {
 
   return useMutation({
     mutationFn: async (input: UpdateCommunityPostInput) => {
-      const { id, title, content } = input;
+      const { id, title, content, userId } = input;
       const { error } = await supabase
         .from('community')
         .update({
           title: title.trim(),
           content: content.trim(),
+          userId: userId,
           updatedAt: new Date().toISOString(),
         })
         .eq('id', Number(id));

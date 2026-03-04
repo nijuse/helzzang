@@ -75,11 +75,14 @@ const CommunityScreen = () => {
   const { data, isPending } = useCommunityPosts();
 
   const handleWritePress = async () => {
-    await supabase.auth.getSession();
-    // if (!session) {
-    //   navigation.navigate('SignIn');
-    //   return;
-    // }
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    // console.log('session ::', session);
+    if (!session) {
+      navigation.navigate('SignIn');
+      return;
+    }
     // 로그인된 경우: 글쓰기 화면으로 이동 등 처리
     navigation.navigate('CommunityWrite');
   };
