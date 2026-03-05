@@ -82,6 +82,13 @@ const useStyles = makeStyles(theme => ({
   skeletonHighlight: {
     backgroundColor: theme.colors.grey0,
   },
+  aiComparisonButton: {
+    width: '100%',
+    backgroundColor: theme.colors.white,
+    // backgroundColor: theme.colors.primary,
+    borderRadius: 100,
+    padding: 0,
+  },
 }));
 
 const HomeScreen = () => {
@@ -178,6 +185,21 @@ const HomeScreen = () => {
             containerStyle={styles.button}
             onPress={() => navigation.push('AIComparison')}
           /> */}
+        </View>
+        <View style={{ marginBottom: 20, width: '100%' }}>
+          <Button
+            title="내 주변 AI 추천 헬스장"
+            type="solid"
+            color={styles.aiComparisonButton.backgroundColor}
+            titleStyle={{
+              color: '#fff',
+              fontSize: 12,
+              fontWeight: 'bold',
+              width: '100%',
+            }}
+            containerStyle={styles.aiComparisonButton}
+            onPress={() => navigation.push('AIComparison')}
+          />
         </View>
         <View style={styles.gymListContainer}>
           {isLoading

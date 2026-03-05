@@ -6,8 +6,8 @@ import {
   ActivityIndicator,
   StyleSheet,
   Linking,
-  Pressable,
 } from 'react-native';
+import { Button } from '@rneui/themed';
 import { TVLY_API_KEY, GROQ_API_KEY } from '@env';
 import useGymList from '../hooks/useGymList';
 import { useStore } from '../store';
@@ -30,8 +30,8 @@ type AIRecommendationResult = {
   gymHours: string;
   gymRating: string;
   priceList: string;
-  naverMapUrl?: string;
-  kakaoMapUrl?: string;
+  naverMapUrl?: string | null;
+  kakaoMapUrl?: string | null;
 };
 
 /** AI가 객체로 반환한 필드를 화면용 문자열로 변환 (React 자식으로 객체 렌더 방지) */
@@ -46,6 +46,34 @@ function toDisplayString(value: unknown): string {
   return String(value);
 }
 
+const APP_BUNDLE_ID = 'com.helzzang';
+
+/** 네이버 지도 URL: 좌표 있으면 앱 스킴, 없으면 주소 검색(웹) */
+function buildNaverMapUrl(opts: {
+  lat: number | undefined;
+  lng: number | undefined;
+  name: string;
+}): string | null {
+  if (opts.lat && opts.lng) {
+    const name = encodeURIComponent(opts.name || '목적지');
+    return `nmap://place?lat=${opts.lat}&lng=${opts.lng}&name=${name}&appname=${APP_BUNDLE_ID}`;
+  }
+  return null;
+}
+
+/** 카카오맵 URL: 좌표 있으면 앱 스킴(길찾기 도착지), 없으면 주소 검색(웹). 좌표는 위도,경도 순 */
+function buildKakaoMapUrl(opts: {
+  lat: number | undefined;
+  lng: number | undefined;
+  name: string;
+}): string | null {
+  if (opts.lat && opts.lng) {
+    const en = encodeURIComponent(opts.name || '목적지');
+    return `kakaomap://route?ep=${opts.lat},${opts.lng}&en=${en}`;
+  }
+  return null;
+}
+
 /**
  * 참고: Groq API(api.groq.com)는 OpenAI 호환 형식을 사용합니다.
  * response_format: { type: 'json_object' }로 구조화된 JSON 응답을 받습니다.
@@ -58,6 +86,17 @@ const AIComparisonScreen = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AIRecommendationResult | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const dataLabel = {
+    gymName: '추천 헬스장 이름',
+    reason: '추천 이유',
+    gymInfo: '헬스장 정보',
+    gymAddress: '헬스장 주소',
+    gymPhone: '헬스장 전화번호',
+    gymHours: '헬스장 운영시간',
+    gymRating: '헬스장 평점',
+    priceList: '가격 정보 (일일권, 회원권 등)',
+  };
 
   const fetchGymWebInfo = async (gymNames: string[]) => {
     try {
@@ -92,11 +131,10 @@ const AIComparisonScreen = () => {
   const handleAnalyze = useCallback(async () => {
     if (!gymList || gymList.length === 0) return;
     setLoading(true);
-
     try {
       const gymNames = gymList.slice(0, 10).map((g: any) => g.name);
       const searchData = await fetchGymWebInfo(gymNames);
-      console.log('searchData', searchData);
+      // console.log('searchData', searchData);
 
       // 연속 호출 시 RN 네트워크 에러 방지: 첫 요청 연결이 완전히 정리된 뒤 Groq 호출
       await delay(400);
@@ -120,10 +158,9 @@ const AIComparisonScreen = () => {
         "gymPhone": "헬스장 전화번호",
         "gymHours": "헬스장 운영시간",
         "gymRating": "헬스장 평점",
-        "priceList": "가격 정보 (일일권, 회원권 등)",
-        "naverMapUrl": "네이버 지도 URL (https://map.naver.com 또는 https://naver.me 형식)",
-        "kakaoMapUrl": "카카오 지도 URL (https://map.kakao.com 또는 https://kakaomap.com 형식)"
+        "priceList": "가격 정보 (일일권, 회원권 등)"
       }
+      ※ 지도 링크는 넣지 마세요. 앱에서 자동으로 생성합니다.
 
       1. 헬스장 목록:
       ${gymList
@@ -164,12 +201,25 @@ const AIComparisonScreen = () => {
           break;
         } catch (err: any) {
           lastError = err;
+          const status = err?.response?.status;
+          const is429 = status === 429;
+          const retryAfterHeader = err?.response?.headers?.['retry-after'];
           const isNetworkErr =
             err?.code === 'ERR_NETWORK' ||
             err?.message === 'Network Error' ||
             err?.message === 'Network request failed';
-          if (isNetworkErr && attempt < maxRetries) {
-            await delay(1000 * attempt);
+
+          const shouldRetry = attempt < maxRetries && (isNetworkErr || is429);
+
+          if (shouldRetry) {
+            let waitMs = 1000 * attempt;
+            if (is429 && retryAfterHeader) {
+              const seconds = parseInt(retryAfterHeader, 10);
+              if (!Number.isNaN(seconds)) waitMs = seconds * 1000;
+            } else if (is429) {
+              waitMs = Math.min(2000 * Math.pow(2, attempt - 1), 30000);
+            }
+            await delay(waitMs);
             continue;
           }
           throw err;
@@ -177,24 +227,49 @@ const AIComparisonScreen = () => {
       }
 
       if (lastError) throw lastError;
-      console.log('Groq AI >> ', resultData);
+      // console.log('Groq AI >> ', resultData);
       const text = resultData?.choices?.[0]?.message?.content ?? '';
       setErrorMessage('');
 
       if (text) {
         try {
           const parsed = JSON.parse(text) as Partial<AIRecommendationResult>;
+          const recommendedName = (parsed.gymName ?? '').trim();
+          const address = (parsed.gymAddress ?? '').trim();
+
+          const matchedGym = gymList?.find(
+            (g: any) =>
+              recommendedName &&
+              (String(g.name).trim() === recommendedName ||
+                String(g.name).includes(recommendedName) ||
+                recommendedName.includes(String(g.name).trim())),
+          );
+          const coords = matchedGym
+            ? {
+                lat: Number(matchedGym?.lat),
+                lng: Number(matchedGym?.lng),
+              }
+            : null;
+
           const structured: AIRecommendationResult = {
             gymName: parsed.gymName ?? '',
             reason: parsed.reason ?? '',
             gymInfo: toDisplayString(parsed.gymInfo ?? ''),
-            gymAddress: parsed.gymAddress ?? '',
+            gymAddress: address,
             gymPhone: parsed.gymPhone ?? '',
             gymHours: parsed.gymHours ?? '',
             gymRating: parsed.gymRating ?? '',
             priceList: toDisplayString(parsed.priceList ?? ''),
-            naverMapUrl: parsed.naverMapUrl,
-            kakaoMapUrl: parsed.kakaoMapUrl,
+            naverMapUrl: buildNaverMapUrl({
+              lat: coords?.lat,
+              lng: coords?.lng,
+              name: recommendedName || '헬스장',
+            }),
+            kakaoMapUrl: buildKakaoMapUrl({
+              lat: coords?.lat,
+              lng: coords?.lng,
+              name: recommendedName || '헬스장',
+            }),
           };
           setResult(structured);
         } catch (parseErr) {
@@ -217,53 +292,14 @@ const AIComparisonScreen = () => {
         setErrorMessage('분석 결과를 생성하지 못했습니다.');
       }
     } catch (e: any) {
-      const status = e?.status || e?.response?.status;
-      const errorData = e?.response?.data;
-      const openaiError = errorData?.error;
-
-      console.error('Groq API 호출 에러 상세:', {
-        message: e?.message,
-        name: e?.name,
-        code: e?.code,
-        status: status,
-        groqError: openaiError,
-        fullError: errorData,
-      });
-
-      const isNetworkError =
-        e?.message === 'Network request failed' ||
-        e?.message === 'Network Error' ||
-        e?.code === 'ERR_NETWORK' ||
-        e?.code === 'NETWORK_ERROR' ||
-        e?.message?.includes('Network');
-
-      let errMsg = '';
-      if (isNetworkError) {
-        errMsg =
-          'Groq API 연결 실패. iOS 시뮬레이터에서 먼저 테스트해보고, 실기기라면 다른 Wi‑Fi·핫스팟으로 시도해보세요. (VPN 해제)';
-      } else if (status === 400) {
-        errMsg =
-          openaiError?.message ||
-          errorData?.message ||
-          '요청 형식이 올바르지 않습니다. API 키와 요청 내용을 확인해주세요.';
-        console.error(
-          'Groq 400 에러 상세:',
-          JSON.stringify(openaiError || errorData),
-        );
-      } else if (status === 401) {
-        errMsg =
-          'API 키가 유효하지 않습니다. .env 파일의 GROQ_API_KEY를 확인해주세요.';
-      } else if (status === 429) {
-        errMsg = 'API 호출 한도가 초과되었습니다. 잠시 후 다시 시도해주세요.';
-      } else {
-        errMsg =
-          openaiError?.message ||
-          `분석 중 오류가 발생했습니다. (상태 코드: ${status || '알 수 없음'})`;
-      }
-
-      console.error('Groq 호출 에러:', errorData ?? e?.response?.data ?? e);
+      console.error('Groq 호출 에러:', e);
       setResult(null);
-      setErrorMessage(errMsg);
+      const status = e?.response?.status;
+      const is429 = status === 429;
+      const message = is429
+        ? '요청이 많아 일시적으로 제한되었습니다. 잠시 후 다시 시도해 주세요.'
+        : e?.message ?? '분석 결과를 생성하지 못했습니다.';
+      setErrorMessage(message);
     } finally {
       setLoading(false);
     }
@@ -293,6 +329,7 @@ const AIComparisonScreen = () => {
             <Text style={styles.errorText}>{errorMessage}</Text>
           ) : result ? (
             <View style={styles.structuredResult}>
+              <Text style={styles.title}>AI 추천 결과</Text>
               {Object.entries(result)
                 .filter(
                   ([key]) =>
@@ -302,50 +339,44 @@ const AIComparisonScreen = () => {
                 )
                 .map(([key, value]) => (
                   <View key={key}>
-                    <Text style={styles.label}>{key}</Text>
+                    <Text style={styles.label}>
+                      {dataLabel[key as keyof typeof dataLabel]}
+                    </Text>
                     <Text style={styles.resultText}>{value}</Text>
                   </View>
                 ))}
               {(result.naverMapUrl || result.kakaoMapUrl) && (
                 <View style={styles.mapLinksRow}>
-                  {result.naverMapUrl ? (
-                    <Pressable
-                      onPress={() => {
-                        try {
-                          Linking.openURL(result.naverMapUrl!);
-                        } catch (e) {
-                          console.warn('지도 링크 열기 실패:', e);
-                        }
-                      }}
-                      style={styles.mapLinkWrap}
-                    >
-                      <Text style={styles.mapLinkText}>
-                        네이버 지도에서 보기
-                      </Text>
-                    </Pressable>
-                  ) : null}
-                  {result.kakaoMapUrl ? (
-                    <Pressable
-                      onPress={() => {
-                        try {
-                          Linking.openURL(result.kakaoMapUrl!);
-                        } catch (e) {
-                          console.warn('지도 링크 열기 실패:', e);
-                        }
-                      }}
-                      style={styles.mapLinkWrap}
-                    >
-                      <Text style={styles.mapLinkText}>
-                        카카오 지도에서 보기
-                      </Text>
-                    </Pressable>
-                  ) : null}
+                  {result?.naverMapUrl && (
+                    <Button
+                      title="네이버 지도에서 보기"
+                      type="solid"
+                      buttonStyle={{ backgroundColor: '#03C75A' }}
+                      titleStyle={styles.mapLinkText}
+                      containerStyle={styles.mapLinkWrap}
+                      onPress={async () =>
+                        result?.naverMapUrl &&
+                        (await Linking.openURL(result?.naverMapUrl))
+                      }
+                    />
+                  )}
+                  {result?.kakaoMapUrl && (
+                    <Button
+                      title="카카오 지도에서 보기"
+                      type="solid"
+                      buttonStyle={{ backgroundColor: '#FFCD05' }}
+                      titleStyle={styles.mapLinkText}
+                      containerStyle={styles.mapLinkWrap}
+                      onPress={async () =>
+                        result?.kakaoMapUrl &&
+                        (await Linking.openURL(result?.kakaoMapUrl))
+                      }
+                    />
+                  )}
                 </View>
               )}
             </View>
-          ) : (
-            <Text style={styles.resultText}>데이터를 불러오는 중입니다...</Text>
-          )}
+          ) : null}
         </View>
       )}
     </ScrollView>
@@ -395,7 +426,7 @@ const styles = StyleSheet.create({
   },
   errorText: { fontSize: 16, color: '#c00' },
   structuredResult: { gap: 0 },
-  mapLinksRow: { flexDirection: 'row', gap: 12, marginTop: 16 },
+  mapLinksRow: { flexDirection: 'column', gap: 12, marginTop: 16 },
   imageWrap: { marginVertical: 12, width: '100%' },
   resultImage: { width: '100%', height: 220, borderRadius: 8 },
   imageCaption: {
@@ -411,8 +442,8 @@ const styles = StyleSheet.create({
   mapLinkText: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#0066ff',
-    textDecorationLine: 'underline',
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 
