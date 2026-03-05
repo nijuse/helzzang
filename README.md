@@ -32,6 +32,12 @@
 
   - API로 일일권 가격을 받아오면 그대로 노출합니다.
 
+- **AI 추천 헬스장(Groq API)**
+
+  - **Groq API**를 이용해 주변 헬스장 목록 중 **가성비가 좋은 곳**을 AI가 추천해 줍니다.
+  - 추천 헬스장은 네이버 지도와 카카오 지도 딥링크를 통해 지도 앱에서 확인할 수 있습니다.
+  - 무료 버전 한도가 있어, 요청이 많을 경우 응답값을 노출하지 못할 수 있습니다.
+
 - **커뮤니티 (게시글 & 댓글)**
 
   - **Google 로그인한 사용자만** 게시글과 댓글을 작성할 수 있습니다.
@@ -49,16 +55,20 @@
 
 <img src="./assets/images/readme/readme_home.png" alt="Gym List Screen" width="320" />
 
-### 3-2. 헬스장 가격 정보 목록
+### 3-2. AI 추천 헬스장 화면
+
+<img src="./assets/images/readme/readme_ai.png" alt="AI Comparison Screen" width="320" />
+
+### 3-3. 헬스장 가격 정보 목록
 
 <img src="./assets/images/readme/readme_membership.png" alt="Gym Detail Screen (membership)" width="320" />
 <img src="./assets/images/readme/readme_female.png" alt="Gym Detail Screen (female)" width="320" />
 
-### 3-3. 커뮤니티 목록 화면
+### 3-4. 커뮤니티 목록 화면
 
 <img src="./assets/images/readme/readme_community.png" alt="Community Screen" width="320" />
 
-### 3-4. 커뮤니티 글쓰기 & 댓글
+### 3-5. 커뮤니티 글쓰기 & 댓글
 
 <img src="./assets/images/readme/readme_post.png" alt="Community Write Screen" width="320" />
 <img src="./assets/images/readme/readme_post_comment.png" alt="Community Comment Screen" width="320" />
@@ -95,6 +105,9 @@
 - **Google**
   - Google OAuth 사용을 위해 다음과 같은 환경 변수를 설정해야 합니다.
     - `GOOGLE_CLIENT_SECRET`
+- **Groq**
+  - Groq API 사용을 위해 다음과 같은 환경 변수를 설정해야 합니다.
+    - `GROQ_API_KEY`
 
 ---
 
@@ -178,6 +191,7 @@ bun run ios
 ## 7. 자주 발생할 수 있는 문제 & 해결 방법
 
 - **빌드/실행 시 네트워크 관련 에러**
+
   - `.env` 파일에 Supabase 관련 환경 변수가 제대로 설정되어 있는지 확인합니다.
   - Android 에뮬레이터/실기기에서 네트워크 권한이 허용되어 있는지 확인합니다.
 
