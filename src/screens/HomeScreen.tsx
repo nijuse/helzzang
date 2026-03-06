@@ -1,5 +1,5 @@
 import { Button, makeStyles, Skeleton } from '@rneui/themed';
-import { View, ScrollView, Image, Text } from 'react-native';
+import { View, ScrollView, Image, Text, Pressable } from 'react-native';
 import { useEffect, useState } from 'react';
 import GetLocation from 'react-native-get-location';
 import useGymList from '../hooks/useGymList';
@@ -224,7 +224,11 @@ const HomeScreen = () => {
             : gymList &&
               gymList.length > 0 &&
               gymList.map((gym: any) => (
-                <View key={gym.id} style={styles.gymItem}>
+                <Pressable
+                  key={gym.id}
+                  style={styles.gymItem}
+                  onPress={() => navigation.push('GymDetail', { id: gym.id })}
+                >
                   <Image
                     source={{
                       uri: gym?.profile_image,
@@ -237,7 +241,7 @@ const HomeScreen = () => {
                       {gym.walk_distance} | {gym.address}
                     </Text>
                   </View>
-                </View>
+                </Pressable>
               ))}
         </View>
       </ScrollView>

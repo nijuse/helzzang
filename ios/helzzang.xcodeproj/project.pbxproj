@@ -176,22 +176,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5A1A5B00C0D01A68108700A75B9A /* Copy Splash Logo */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../assets/images/logo.png",
-			);
-			name = "Copy Splash Logo";
-			outputPaths = (
-				"$(SRCROOT)/helzzang/Images.xcassets/SplashLogo.imageset/logo.png",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "LOGO_SRC=\"${SRCROOT}/../assets/images/logo.png\"\nIMAGESET=\"${SRCROOT}/helzzang/Images.xcassets/SplashLogo.imageset\"\nif [ -f \"$LOGO_SRC\" ]; then\n  cp \"$LOGO_SRC\" \"${IMAGESET}/logo.png\"\n  cp \"$LOGO_SRC\" \"${IMAGESET}/logo@2x.png\"\n  cp \"$LOGO_SRC\" \"${IMAGESET}/logo@3x.png\"\nfi\n";
-		};
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -229,6 +213,22 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		5A1A5B00C0D01A68108700A75B9A /* Copy Splash Logo */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../assets/images/logo.png",
+			);
+			name = "Copy Splash Logo";
+			outputPaths = (
+				"$(SRCROOT)/helzzang/Images.xcassets/SplashLogo.imageset/logo.png",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "LOGO_SRC=\"${SRCROOT}/../assets/images/logo.png\"\nIMAGESET=\"${SRCROOT}/helzzang/Images.xcassets/SplashLogo.imageset\"\nif [ -f \"$LOGO_SRC\" ]; then\n  cp \"$LOGO_SRC\" \"${IMAGESET}/logo.png\"\n  cp \"$LOGO_SRC\" \"${IMAGESET}/logo@2x.png\"\n  cp \"$LOGO_SRC\" \"${IMAGESET}/logo@3x.png\"\nfi\n";
 		};
 		6C53448D0F705D1DB81F81ED /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;

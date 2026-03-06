@@ -16,6 +16,7 @@ import SignInScreen from '../screens/SignInScreen';
 import CommunityWriteScreen from '../screens/community/CommunityWriteScreen';
 import CommunityDetailScreen from '../screens/community/CommunityDetailScreen';
 import CommunityCommentEditScreen from '../screens/community/CommunityCommentEditScreen';
+import GymDetailScreen from '../screens/GymDetailScreen';
 
 import { colors } from '../../themed';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -30,6 +31,7 @@ export type RootStackParamList = {
   CommunityWrite: undefined | { id: string };
   CommunityDetail: { id: string };
   CommunityCommentEdit: { id: string };
+  GymDetail: { id: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -92,6 +94,7 @@ const RootNavigator = () => {
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="CommunityWrite" component={CommunityWriteScreen} />
       <Stack.Screen name="CommunityDetail" component={CommunityDetailScreen} />
+      <Stack.Screen name="GymDetail" component={GymDetailScreen} />
       <Stack.Screen
         name="CommunityCommentEdit"
         component={CommunityCommentEditScreen}

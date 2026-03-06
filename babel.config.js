@@ -21,5 +21,7 @@ module.exports = {
         ],
       },
     ],
+    // Reanimated 4 worklet 변환용 - 반드시 plugins 배열의 마지막에 위치
+    'react-native-worklets/plugin',
   ],
 };
