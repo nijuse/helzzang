@@ -147,7 +147,7 @@ export default function GymDetailScreen() {
                 ?.sort((a: any, b: any) => a.times - b.times)
                 .map((price: any) => (
                   <View
-                    key={price.id}
+                    key={`${price.times}-${price.price}`}
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
@@ -197,7 +197,7 @@ const useStyles = makeStyles(theme => ({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-    fontSize: 12,
+    fontSize: 8,
     fontWeight: 'bold',
   },
   gymInfo_forWomen: {
