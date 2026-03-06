@@ -55,20 +55,24 @@
 
 <img src="./assets/images/readme/readme_home.png" alt="Gym List Screen" width="320" />
 
-### 3-2. AI 추천 헬스장 화면
+### 3-2. 헬스장 상세 화면
+
+<img src="./assets/images/readme/readme_gym_detail.png" alt="Gym Detail Screen" width="320" />
+
+### 3-3. 내 주변 AI 추천 헬스장 화면
 
 <img src="./assets/images/readme/readme_ai.png" alt="AI Comparison Screen" width="320" />
 
-### 3-3. 헬스장 가격 정보 목록
+### 3-4. 헬스장 가격 정보 목록
 
 <img src="./assets/images/readme/readme_membership.png" alt="Gym Detail Screen (membership)" width="320" />
 <img src="./assets/images/readme/readme_female.png" alt="Gym Detail Screen (female)" width="320" />
 
-### 3-4. 커뮤니티 목록 화면
+### 3-5. 커뮤니티 목록 화면
 
 <img src="./assets/images/readme/readme_community.png" alt="Community Screen" width="320" />
 
-### 3-5. 커뮤니티 글쓰기 & 댓글
+### 3-6. 커뮤니티 글쓰기 & 댓글
 
 <img src="./assets/images/readme/readme_post.png" alt="Community Write Screen" width="320" />
 <img src="./assets/images/readme/readme_post_comment.png" alt="Community Comment Screen" width="320" />

@@ -6,7 +6,7 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@env';
 
 const supabaseUrl = SUPABASE_URL;
 const supabaseAnonKey = SUPABASE_ANON_KEY;
-console.log('SUPABASE_URL', SUPABASE_URL);
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     // 로그인 정보를 AsyncStorage에 저장해 앱을 껐다 켜도 세션 유지
