@@ -1,6 +1,9 @@
-import { Image, View, Text } from 'react-native';
+import { Image, View, Text, Pressable } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import { FILTERS } from '../constants';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/RootNavigator';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -70,12 +73,19 @@ const GymList = ({
   filter: keyof typeof FILTERS;
 }) => {
   const styles = useStyles();
-
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   if (!data) return null;
   return (
     <View style={styles.container}>
       {data?.map((gym: any) => (
-        <View key={gym.id} style={styles.itemWrap}>
+        <Pressable
+          key={gym.id}
+          style={styles.itemWrap}
+          onPress={() => {
+            navigation.navigate('GymDetail', { id: gym.id });
+          }}
+        >
           <Image source={{ uri: gym.profile_image }} style={styles.image} />
           <View style={styles.gymInfo}>
             <Text style={styles.gymName}>{gym.name}</Text>
@@ -115,7 +125,7 @@ const GymList = ({
                 )}
             </View>
           </View>
-        </View>
+        </Pressable>
       ))}
     </View>
   );
