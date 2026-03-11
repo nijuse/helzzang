@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Linking,
-  AppState,
-  AppStateStatus,
-} from 'react-native';
+import { View, Linking, AppState, AppStateStatus, Text } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Button } from '@rneui/themed';
+import { Button, makeStyles } from '@rneui/themed';
 import { supabase } from '../lib/supabase';
 import { handleAuthCallbackUrl } from '../lib/authCallback';
-import { colors } from '../../themed';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 
 /**
@@ -24,6 +17,7 @@ const getRedirectUrl = () => {
 };
 
 const SignInScreen = () => {
+  const styles = useStyles();
   const [loading, setLoading] = useState(false);
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -141,6 +135,10 @@ const SignInScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Text
+        dynamicTypeRamp="largeTitle"
+        style={styles.title}
+      >{`내 주변\n최고의 헬스장을\n찾아보세요`}</Text>
       <Button
         title={'Sign in with Google'}
         onPress={signInWithGoogle}
@@ -153,30 +151,21 @@ const SignInScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(theme => ({
   container: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
     padding: 24,
-    backgroundColor: colors.white,
-    marginBottom: '10%',
-  },
-  logo: {
-    width: 240,
-    height: 70,
-    marginBottom: '30%',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.grey0,
-    marginBottom: 32,
+    backgroundColor: theme.colors.white,
+    marginBottom: '40%',
   },
   buttonContainer: {
     width: '100%',
   },
   googleButton: {
     width: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: theme.colors.primary,
     borderRadius: 100,
     paddingVertical: 14,
     paddingHorizontal: 24,
@@ -185,13 +174,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
   },
-  hint: {
-    marginTop: 24,
-    fontSize: 12,
-    color: colors.grey0,
+  title: {
+    color: theme.colors.primary,
+    fontFamily: 'GangwonEduPower',
+    fontSize: 32,
+    fontWeight: '900',
     textAlign: 'center',
-    paddingHorizontal: 16,
+    lineHeight: 48,
+    marginBottom: 48,
   },
-});
+}));
 
 export default SignInScreen;

@@ -85,9 +85,14 @@ const useStyles = makeStyles(theme => ({
   aiComparisonButton: {
     width: '100%',
     backgroundColor: theme.colors.white,
-    // backgroundColor: theme.colors.primary,
     borderRadius: 100,
     padding: 0,
+  },
+  aiComparisonButtonTitle: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    width: '100%',
   },
 }));
 
@@ -102,6 +107,7 @@ const HomeScreen = () => {
    * queryKey에 lat/lng 포함 → 같은 위치면 캐시 사용
    */
   const { data, isLoading } = useGymList(location);
+
   /**
    * 위치 권한 요청 (location을 null로 바꾸지 않음 → 쿼리 비활성화 방지, 데이터 갱신 반영)
    */
@@ -178,25 +184,13 @@ const HomeScreen = () => {
             containerStyle={styles.button}
             onPress={() => navigation.push('Community')}
           />
-          {/* <Button
-            title="AI 추천 헬스장"
-            type="outline"
-            titleStyle={styles.buttonTitle}
-            containerStyle={styles.button}
-            onPress={() => navigation.push('AIComparison')}
-          /> */}
         </View>
         <View style={{ marginBottom: 20, width: '100%' }}>
           <Button
             title="내 주변 AI 추천 헬스장"
             type="solid"
             color={styles.aiComparisonButton.backgroundColor}
-            titleStyle={{
-              color: '#fff',
-              fontSize: 12,
-              fontWeight: 'bold',
-              width: '100%',
-            }}
+            titleStyle={styles.aiComparisonButtonTitle}
             containerStyle={styles.aiComparisonButton}
             onPress={() => navigation.push('AIComparison')}
           />

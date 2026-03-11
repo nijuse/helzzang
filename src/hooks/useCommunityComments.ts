@@ -37,7 +37,6 @@ export default function useCommunityComments(postId: string) {
       const rows = (data || []) as (CommunityComment & {
         users: { userName: string | null } | null;
       })[];
-      console.log('useCommunityComments rows ::', rows);
       return rows.map(({ users, ...row }) => ({
         ...row,
         userName: users?.userName ?? '익명',

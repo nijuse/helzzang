@@ -2,6 +2,54 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "assets/fonts/GangwonEduPower.otf",
+      "sha1": "1c15f826e2143c3292fd575c27b7842081f22e88"
+    },
+    {
+      "path": "assets/images/readme/readme_female.png",
+      "sha1": "e1156e1b0f74079e26cf32cf2a6be285a7c7d01d"
+    },
+    {
+      "path": "assets/images/readme/readme_post.png",
+      "sha1": "859c627c3d0b8bdc6357b8f61b9a3530619fa4cb"
+    },
+    {
+      "path": "assets/images/readme/readme_membership.png",
+      "sha1": "2ee8c5ed12b1f6e28c60c75f0e8c97d96821ad44"
+    },
+    {
+      "path": "assets/images/readme/readme_community.png",
+      "sha1": "4ab3d503346dd77156efa3cd765b2b40a8c33e02"
+    },
+    {
+      "path": "assets/images/readme/readme_home.png",
+      "sha1": "5129d32e0dd0a8a2252143f19eaf1c0d07ae0a54"
+    },
+    {
+      "path": "assets/images/readme/readme_ai.png",
+      "sha1": "e5e222773009b9f043018c61d5f45d6ca0241708"
+    },
+    {
+      "path": "assets/images/readme/readme_post_comment.png",
+      "sha1": "0ad595c40ecf28b6f54d3f74d677b8fe5919d787"
+    },
+    {
+      "path": "assets/images/readme/readme_create_post.png",
+      "sha1": "5dd33100e2598fb327c5146e8531110be6b1c591"
+    },
+    {
+      "path": "assets/images/readme/readme_gym_detail.png",
+      "sha1": "f4937855960a2ddfd95e47d2c4694fc8043c9383"
+    },
+    {
+      "path": "assets/images/logo.png",
+      "sha1": "c50b5383cfdd2bcec04c6b56e72f526d7df30c3a"
+    },
+    {
+      "path": "assets/images/logo2.png",
+      "sha1": "b453c5635fcfc6afafec81c27256978d8ace2978"
+    },
+    {
       "path": "node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
       "sha1": "c090a3ec96a3f1bb9b615c2f3f204ce0dcdcdbc3"
     },

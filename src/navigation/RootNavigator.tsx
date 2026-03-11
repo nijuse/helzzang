@@ -8,7 +8,6 @@ import { StyleSheet, Image, Pressable } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import HomeScreen from '../screens/HomeScreen';
-import RecentlyViewedScreen from '../screens/RecentlyViewedScreen';
 import GymListScreen from '../screens/GymListScreen';
 import AIComparisonScreen from '../screens/AIComparisonScreen';
 import CommunityScreen from '../screens/community/CommunityScreen';
@@ -23,7 +22,6 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 export type RootStackParamList = {
   Home: undefined;
-  RecentlyViewed: undefined;
   GymList: { filter: 'dayPass' | 'membership' | 'female' };
   AIComparison: undefined;
   Community: undefined;
@@ -87,7 +85,6 @@ const RootNavigator = () => {
       })}
     >
       <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="RecentlyViewed" component={RecentlyViewedScreen} />
       <Stack.Screen name="GymList" component={GymListScreenWrapper} />
       <Stack.Screen name="AIComparison" component={AIComparisonScreen} />
       <Stack.Screen name="Community" component={CommunityScreen} />
