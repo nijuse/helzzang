@@ -14,6 +14,7 @@ import type { RootStackParamList } from '../navigation/RootNavigator';
 import useGymDetail from '../hooks/useGymDetail';
 import { makeStyles } from '@rneui/themed';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { buildNaverMapUrl } from '../lib/utils';
 
 const { width: WINDOW_WIDTH } = Dimensions.get('window');
 
@@ -27,10 +28,8 @@ export default function GymDetailScreen() {
   const progress = useSharedValue<number>(0);
 
   const handleOpenMap = (lat: string, lng: string, name: string) => {
-    const APP_BUNDLE_ID = 'com.helzzang';
-    Linking.openURL(
-      `nmap://place?lat=${lat}&lng=${lng}&name=${name}&appname=${APP_BUNDLE_ID}`,
-    );
+    if (buildNaverMapUrl({ lat, lng, name }))
+      Linking.openURL(buildNaverMapUrl({ lat, lng, name }) as string);
   };
 
   if (error || !gym) {

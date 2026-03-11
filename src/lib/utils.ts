@@ -22,3 +22,36 @@ export const formatRelativeTime = (createdAt: string): string => {
   if (diffDays < 7) return `${diffDays}일 전`;
   return `${diffWeeks}주 전`;
 };
+
+export type MapUrlOptions = {
+  lat: string | undefined;
+  lng: string | undefined;
+  name: string;
+};
+
+/** 네이버 지도 URL: 좌표 있으면 앱 스킴, 없으면 주소 검색(웹) */
+export const buildNaverMapUrl = ({
+  lat,
+  lng,
+  name,
+}: MapUrlOptions): string | null => {
+  const APP_BUNDLE_ID = 'com.helzzang';
+  if (lat && lng) {
+    const _name = encodeURIComponent(name || '목적지');
+    return `nmap://place?lat=${lat}&lng=${lng}&name=${_name}&appname=${APP_BUNDLE_ID}`;
+  }
+  return null;
+};
+
+/** 카카오맵 URL: 좌표 있으면 앱 스킴(길찾기 도착지), 없으면 주소 검색(웹). 좌표는 위도,경도 순 */
+export const buildKakaoMapUrl = ({
+  lat,
+  lng,
+  name,
+}: MapUrlOptions): string | null => {
+  if (lat && lng) {
+    const _name = encodeURIComponent(name || '목적지');
+    return `kakaomap://route?ep=${lat},${lng}&en=${_name}`;
+  }
+  return null;
+};

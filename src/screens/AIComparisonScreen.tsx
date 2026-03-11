@@ -10,6 +10,7 @@ import {
 import { Button } from '@rneui/themed';
 import { TVLY_API_KEY, GROQ_API_KEY } from '@env';
 import useGymList from '../hooks/useGymList';
+import { buildNaverMapUrl, buildKakaoMapUrl } from '../lib/utils';
 import { useStore } from '../store';
 import { colors } from '../../themed';
 import axios from 'axios';
@@ -44,34 +45,6 @@ function toDisplayString(value: unknown): string {
       .join('\n');
   }
   return String(value);
-}
-
-const APP_BUNDLE_ID = 'com.helzzang';
-
-/** 네이버 지도 URL: 좌표 있으면 앱 스킴, 없으면 주소 검색(웹) */
-function buildNaverMapUrl(opts: {
-  lat: number | undefined;
-  lng: number | undefined;
-  name: string;
-}): string | null {
-  if (opts.lat && opts.lng) {
-    const name = encodeURIComponent(opts.name || '목적지');
-    return `nmap://place?lat=${opts.lat}&lng=${opts.lng}&name=${name}&appname=${APP_BUNDLE_ID}`;
-  }
-  return null;
-}
-
-/** 카카오맵 URL: 좌표 있으면 앱 스킴(길찾기 도착지), 없으면 주소 검색(웹). 좌표는 위도,경도 순 */
-function buildKakaoMapUrl(opts: {
-  lat: number | undefined;
-  lng: number | undefined;
-  name: string;
-}): string | null {
-  if (opts.lat && opts.lng) {
-    const en = encodeURIComponent(opts.name || '목적지');
-    return `kakaomap://route?ep=${opts.lat},${opts.lng}&en=${en}`;
-  }
-  return null;
 }
 
 /**
@@ -246,8 +219,8 @@ const AIComparisonScreen = () => {
           );
           const coords = matchedGym
             ? {
-                lat: Number(matchedGym?.lat),
-                lng: Number(matchedGym?.lng),
+                lat: matchedGym?.lat,
+                lng: matchedGym?.lng,
               }
             : null;
 
