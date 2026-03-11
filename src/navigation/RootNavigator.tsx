@@ -9,7 +9,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import HomeScreen from '../screens/HomeScreen';
 import GymListScreen from '../screens/GymListScreen';
-import AIComparisonScreen from '../screens/AIComparisonScreen';
+import AIComparisonScreen from '../screens/AIRecommendationScreen';
 import CommunityScreen from '../screens/community/CommunityScreen';
 import SignInScreen from '../screens/SignInScreen';
 import CommunityWriteScreen from '../screens/community/CommunityWriteScreen';
