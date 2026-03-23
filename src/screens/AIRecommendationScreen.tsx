@@ -37,7 +37,6 @@ const AIComparisonScreen = () => {
     priceList: '가격 정보 (일일권, 회원권 등)',
   };
 
-
   return (
     <ScrollView
       style={styles.container}

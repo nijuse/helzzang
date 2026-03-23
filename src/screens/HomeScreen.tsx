@@ -1,8 +1,16 @@
 import { Button, makeStyles, Skeleton } from '@rneui/themed';
-import { View, ScrollView, Image, Text, Pressable } from 'react-native';
+import {
+  View,
+  ScrollView,
+  Image,
+  Text,
+  Pressable,
+  FlatList,
+} from 'react-native';
 import { useEffect, useState } from 'react';
 import GetLocation from 'react-native-get-location';
 import useGymList from '../hooks/useGymList';
+import type { GymSearchListRow } from '../types/gymSearch';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
@@ -40,11 +48,11 @@ const useStyles = makeStyles(theme => ({
   },
   gymListContainer: {
     width: '100%',
-    gap: 20,
   },
   gymItem: {
     width: '100%',
     gap: 10,
+    marginBottom: 20,
   },
   gymItemImage: {
     width: '100%',
@@ -101,7 +109,7 @@ const HomeScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { location, setLocation, getDefaultLocation } = useStore();
-  const [gymList, setGymList] = useState<any[]>([]);
+  const [gymList, setGymList] = useState<GymSearchListRow[]>([]);
   /**
    * 헬스장 목록 조회 (TanStack Query 캐싱)
    * queryKey에 lat/lng 포함 → 같은 위치면 캐시 사용
@@ -141,11 +149,13 @@ const HomeScreen = () => {
   useEffect(() => {
     if (data) {
       setGymList(
-        data.map((gym: any) => ({
+        data.map(gym => ({
           ...gym,
-          profile_image: gym.profile_image || gym.gym_cover_images?.[0]?.url,
+          profile_image: gym.profile_image || gym.gym_cover_images[0]?.url,
         })),
       );
+    } else {
+      setGymList([]);
     }
   }, [data]);
 
@@ -196,36 +206,39 @@ const HomeScreen = () => {
           />
         </View>
         <View style={styles.gymListContainer}>
-          {isLoading
-            ? [1, 2, 3].map(i => (
-                <View key={`skeleton-${i}`} style={styles.skeletonItem}>
+          {isLoading ? (
+            [1, 2, 3].map(i => (
+              <View key={`skeleton-${i}`} style={styles.skeletonItem}>
+                <Skeleton
+                  style={styles.skeletonImage}
+                  skeletonStyle={styles.skeletonHighlight}
+                />
+                <View style={styles.skeletonInfo}>
                   <Skeleton
-                    style={styles.skeletonImage}
+                    style={styles.skeletonName}
                     skeletonStyle={styles.skeletonHighlight}
                   />
-                  <View style={styles.skeletonInfo}>
-                    <Skeleton
-                      style={styles.skeletonName}
-                      skeletonStyle={styles.skeletonHighlight}
-                    />
-                    <Skeleton
-                      style={styles.skeletonDistance}
-                      skeletonStyle={styles.skeletonHighlight}
-                    />
-                  </View>
+                  <Skeleton
+                    style={styles.skeletonDistance}
+                    skeletonStyle={styles.skeletonHighlight}
+                  />
                 </View>
-              ))
-            : gymList &&
-              gymList.length > 0 &&
-              gymList.map((gym: any) => (
+              </View>
+            ))
+          ) : (
+            <FlatList
+              data={gymList}
+              keyExtractor={item => String(item.id)}
+              renderItem={({ item: gym }: { item: GymSearchListRow }) => (
                 <Pressable
-                  key={gym.id}
                   style={styles.gymItem}
-                  onPress={() => navigation.push('GymDetail', { id: gym.id })}
+                  onPress={() =>
+                    navigation.push('GymDetail', { id: String(gym.id) })
+                  }
                 >
                   <Image
                     source={{
-                      uri: gym?.profile_image,
+                      uri: gym.profile_image,
                     }}
                     style={styles.gymItemImage}
                   />
@@ -236,7 +249,10 @@ const HomeScreen = () => {
                     </Text>
                   </View>
                 </Pressable>
-              ))}
+              )}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
         </View>
       </ScrollView>
     </View>

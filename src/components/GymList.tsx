@@ -4,6 +4,7 @@ import { FILTERS } from '../constants';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
+import type { GymListRowData, WoondocPriceEntry } from '../types/gymSearch';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -69,64 +70,76 @@ const GymList = ({
   data,
   filter,
 }: {
-  data: any;
+  data: readonly GymListRowData[];
   filter: keyof typeof FILTERS;
 }) => {
   const styles = useStyles();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  if (!data) return null;
+  if (!data.length) return null;
   return (
     <View style={styles.container}>
-      {data?.map((gym: any) => (
-        <Pressable
-          key={gym.id}
-          style={styles.itemWrap}
-          onPress={() => {
-            navigation.navigate('GymDetail', { id: gym.id });
-          }}
-        >
-          <Image source={{ uri: gym.profile_image }} style={styles.image} />
-          <View style={styles.gymInfo}>
-            <Text style={styles.gymName}>{gym.name}</Text>
-            <Text
-              style={[
-                styles.gymDistance,
-                filter === 'membership' && { marginBottom: 4 },
-              ]}
-            >
-              {gym.walk_distance}
-            </Text>
-            <View style={styles.gymPriceWrap}>
-              {filter !== 'membership' &&
-                gym?.gym_price_info?.day_price >= 0 && (
+      {data.map((gym: GymListRowData) => {
+        const dayPrice = gym.gym_price_info?.day_price;
+        const showDayPass =
+          filter !== 'membership' &&
+          typeof dayPrice === 'number' &&
+          dayPrice >= 0;
+        return (
+          <Pressable
+            key={gym.id}
+            style={styles.itemWrap}
+            onPress={() => {
+              navigation.navigate('GymDetail', { id: String(gym.id) });
+            }}
+          >
+            <Image
+              source={{ uri: gym.profile_image ?? '' }}
+              style={styles.image}
+            />
+            <View style={styles.gymInfo}>
+              <Text style={styles.gymName}>{gym.name}</Text>
+              <Text
+                style={[
+                  styles.gymDistance,
+                  filter === 'membership' && { marginBottom: 4 },
+                ]}
+              >
+                {gym.walk_distance}
+              </Text>
+              <View style={styles.gymPriceWrap}>
+                {showDayPass && (
                   <>
                     <Text style={styles.gymPriceLabel}>일일권</Text>
                     <Text style={styles.gymPrice}>
-                      {gym.gym_price_info.day_price.toLocaleString()}원
+                      {dayPrice.toLocaleString()}원
                     </Text>
                   </>
                 )}
-              {filter === 'membership' &&
-                gym?.gym_price_info?.sortedGymPrices?.map((price: any) => (
-                  <View
-                    key={price.times + price.price.toString()}
-                    style={styles.membershipPriceWrap}
-                  >
-                    <Text style={styles.gymPriceLabel}>{price.times}개월</Text>
-                    <Text style={styles.membershipPrice}>
-                      {price.price.toLocaleString()}원
-                    </Text>
-                  </View>
-                ))}
-              {filter === 'membership' &&
-                !gym?.gym_price_info?.sortedGymPrices?.length && (
-                  <Text style={styles.membershipNoPrice}>가격 정보 없음</Text>
-                )}
+                {filter === 'membership' &&
+                  gym.gym_price_info?.sortedGymPrices?.map(
+                    (price: WoondocPriceEntry) => (
+                      <View
+                        key={price.times + price.price.toString()}
+                        style={styles.membershipPriceWrap}
+                      >
+                        <Text style={styles.gymPriceLabel}>
+                          {price.times}개월
+                        </Text>
+                        <Text style={styles.membershipPrice}>
+                          {price.price.toLocaleString()}원
+                        </Text>
+                      </View>
+                    ))}
+                {filter === 'membership' &&
+                  !gym?.gym_price_info?.sortedGymPrices?.length && (
+                    <Text style={styles.membershipNoPrice}>가격 정보 없음</Text>
+                  )}
+              </View>
             </View>
-          </View>
-        </Pressable>
-      ))}
+          </Pressable>
+        );
+      })}
     </View>
   );
 };

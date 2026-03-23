@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { TVLY_API_KEY, GROQ_API_KEY } from '@env';
 import { buildKakaoMapUrl, buildNaverMapUrl } from '../lib/utils';
+import type { GymSearchResult } from '../types/gymSearch';
 
 const TAVILY_SEARCH_URL = 'https://api.tavily.com/search';
 
@@ -35,11 +36,9 @@ const toDisplayString = (value: unknown): string => {
   return String(value);
 };
 
-type UseAIRecommendationParams = {
-  gymList: any[] | undefined | null;
-};
-
-const fetchGymWebInfo = async (gymNames: string[]) => {
+const fetchGymWebInfo = async (
+  gymNames: string[],
+): Promise<SearchDataResult[] | null> => {
   try {
     const query = `${gymNames.join(
       ', ',
@@ -68,7 +67,17 @@ const fetchGymWebInfo = async (gymNames: string[]) => {
   }
 };
 
-export const useAIRecommendation = ({ gymList }: UseAIRecommendationParams) => {
+export type SearchDataResult = {
+  content: string;
+  url: string;
+  title: string;
+};
+
+export const useAIRecommendation = ({
+  gymList,
+}: {
+  gymList: GymSearchResult[] | undefined | null;
+}) => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AIRecommendationResult | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -77,16 +86,15 @@ export const useAIRecommendation = ({ gymList }: UseAIRecommendationParams) => {
     if (!gymList || gymList.length === 0) return;
     setLoading(true);
     try {
-      const gymNames = gymList.slice(0, 10).map((g: any) => g.name);
+      const gymNames = gymList.slice(0, 10).map((g: GymSearchResult) => g.name);
       const searchData = await fetchGymWebInfo(gymNames);
-
       // 연속 호출 시 RN 네트워크 에러 방지: 첫 요청 연결이 완전히 정리된 뒤 Groq 호출
       await delay(400);
 
       // prompt 길이 제한 (OpenAI API는 토큰 제한이 있음)
       const searchDataText = searchData
         ? searchData
-            .map((r: any) => `${r.content} - ${r.url}`)
+            .map((r: SearchDataResult) => `${r.content} - ${r.url}`)
             .join('\n')
             .substring(0, 2000)
         : '';
@@ -109,7 +117,10 @@ export const useAIRecommendation = ({ gymList }: UseAIRecommendationParams) => {
       1. 헬스장 목록:
       ${gymList
         .slice(0, 10)
-        .map((g: any) => `- ${g.name} (위치: ${g.address || '정보 없음'})`)
+        .map(
+          (g: GymSearchResult) =>
+            `- ${g.name} (위치: ${g.address || '정보 없음'})`,
+        )
         .join('\n')}
 
       2. 실시간 정보:

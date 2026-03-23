@@ -7,6 +7,11 @@ import { useStore } from '../store';
 import { FILTERS } from '../constants';
 import Dropdown from 'react-native-input-select';
 import { colors } from '../../themed';
+import type {
+  GymListRowData,
+  GymSearchResult,
+  WoondocPriceEntry,
+} from '../types/gymSearch';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -38,28 +43,29 @@ const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
   const styles = useStyles();
   const { location } = useStore();
   const { data } = useGymList(location);
-  const [gymList, setGymList] = useState<any[]>([]);
+  const [gymList, setGymList] = useState<GymListRowData[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>('');
 
-  const setDayPassGymList = (_data: any[]) => {
+  const setDayPassGymList = (_data: readonly GymListRowData[] | undefined) => {
     setGymList(
-      _data
-        ?.map((gym: any) => ({
+      (_data ?? [])
+        .map((gym: GymListRowData) => ({
           ...gym,
           gym_price_info: {
             ...gym.gym_price_info,
             day_price:
-              gym?.gym_price_info?.day_price >= 10000
-                ? gym?.gym_price_info?.day_price
+              (gym.gym_price_info?.day_price ?? 0) >= 10000
+                ? gym.gym_price_info?.day_price
                 : [10000, 18000, 25000, 20000, 30000][
                     Math.floor(Math.random() * 5)
                   ],
           },
         }))
-        .sort(
-          (a: any, b: any) =>
-            a.gym_price_info.day_price - b.gym_price_info.day_price,
-        ),
+        .sort((a, b) => {
+          const pa = a.gym_price_info?.day_price ?? 0;
+          const pb = b.gym_price_info?.day_price ?? 0;
+          return pa - pb;
+        }),
     );
   };
 
@@ -70,30 +76,37 @@ const GymListScreen = ({ filter }: { filter: keyof typeof FILTERS }) => {
 
   useEffect(() => {
     if (data) {
-      setDayPassGymList(data);
+      setDayPassGymList(data ?? []);
     }
   }, [data]);
 
   useEffect(() => {
+    const rawList = data ?? [];
     if (selectedFilter === 'female') {
-      setDayPassGymList(gymList?.filter((gym: any) => gym?.for_women === true));
+      setDayPassGymList(
+        gymList.filter((gym: GymListRowData) => gym.for_women === true),
+      );
     } else if (selectedFilter === 'dayPass') {
-      setDayPassGymList(data);
+      setDayPassGymList(rawList);
     } else if (selectedFilter === 'membership') {
-      const membershipGymList = (data || []).map((gym: any) => ({
-        ...gym,
-        gym_price_info: {
-          ...gym.gym_price_info,
-          sortedGymPrices:
-            gym?.gym_price_info?.gym_price_tables?.[0]?.gym_prices
-              ?.slice()
-              ?.filter(
-                (price: { times: number; price: number }) =>
-                  price.price > 10000,
-              )
-              .sort((a: any, b: any) => a.times - b.times) || [],
-        },
-      }));
+      const membershipGymList: GymListRowData[] = rawList.map(
+        (gym: GymSearchResult) => ({
+          ...gym,
+          gym_price_info: {
+            ...gym.gym_price_info,
+            sortedGymPrices:
+              gym.gym_price_info?.gym_price_tables?.[0]?.gym_prices
+                ?.slice()
+                ?.filter(
+                  (price: WoondocPriceEntry) => price.price > 10000,
+                )
+                .sort(
+                  (a: WoondocPriceEntry, b: WoondocPriceEntry) =>
+                    a.times - b.times,
+                ) ?? [],
+          },
+        }),
+      );
       setGymList(membershipGymList);
     }
   }, [selectedFilter]); // eslint-disable-line react-hooks/exhaustive-deps

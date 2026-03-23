@@ -19,6 +19,11 @@ import { buildNaverMapUrl } from '../lib/utils';
 const { width: WINDOW_WIDTH } = Dimensions.get('window');
 
 type CarouselImageItem = { url: string; id: number; order: number };
+type GymPrice = {
+  times: number;
+  type: number;
+  price: number;
+};
 
 export default function GymDetailScreen() {
   const styles = useStyles();
@@ -143,8 +148,8 @@ export default function GymDetailScreen() {
           0 ? (
             <View style={{ flexDirection: 'column', gap: 8 }}>
               {gym.gym_price_info.gym_price_tables?.[0]?.gym_prices
-                ?.sort((a: any, b: any) => a.times - b.times)
-                .map((price: any) => (
+                ?.sort((a: GymPrice, b: GymPrice) => a.times - b.times)
+                .map((price: GymPrice) => (
                   <View
                     key={`${price.times}-${price.price}`}
                     style={{
