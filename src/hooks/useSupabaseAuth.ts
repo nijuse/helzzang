@@ -67,17 +67,17 @@ export default function useSupabaseAuth(): AuthState {
 
     init();
 
-    const {
-      data: authListener,
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!isMounted) return;
-      setState({
-        session: session ?? null,
-        user: session?.user ?? null,
-        loading: false,
-        error: null,
-      });
-    });
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (!isMounted) return;
+        setState({
+          session: session ?? null,
+          user: session?.user ?? null,
+          loading: false,
+          error: null,
+        });
+      },
+    );
 
     return () => {
       isMounted = false;
@@ -87,4 +87,3 @@ export default function useSupabaseAuth(): AuthState {
 
   return state;
 }
-

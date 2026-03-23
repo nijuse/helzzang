@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import { makeStyles } from '@rneui/themed';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { formatRelativeTime } from '../lib/utils';
+import { formatRelativeTime } from '../utils';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/RootNavigator';

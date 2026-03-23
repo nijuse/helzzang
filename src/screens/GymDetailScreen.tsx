@@ -14,7 +14,7 @@ import type { RootStackParamList } from '../navigation/RootNavigator';
 import useGymDetail from '../hooks/useGymDetail';
 import { makeStyles } from '@rneui/themed';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { buildNaverMapUrl } from '../lib/utils';
+import { buildNaverMapUrl } from '../utils';
 
 const { width: WINDOW_WIDTH } = Dimensions.get('window');
 

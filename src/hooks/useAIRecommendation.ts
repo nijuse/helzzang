@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { TVLY_API_KEY, GROQ_API_KEY } from '@env';
-import { buildKakaoMapUrl, buildNaverMapUrl } from '../lib/utils';
+import { buildKakaoMapUrl, buildNaverMapUrl } from '../utils';
 import type { GymSearchResult } from '../types/gymSearch';
 
 const TAVILY_SEARCH_URL = 'https://api.tavily.com/search';

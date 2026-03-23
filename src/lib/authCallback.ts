@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from '../lib/supabase';
 
 function parseParamsFromUrl(url: string): Record<string, string> {
   const params: Record<string, string> = {};

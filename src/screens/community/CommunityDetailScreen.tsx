@@ -12,7 +12,7 @@ import { Input, makeStyles } from '@rneui/themed';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCommunityPost } from '../../hooks/useCommunityPosts';
-import { formatRelativeTime } from '../../lib/utils';
+import { formatRelativeTime } from '../../utils';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { supabase } from '../../lib/supabase';

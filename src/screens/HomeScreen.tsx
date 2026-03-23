@@ -14,7 +14,7 @@ import type { GymSearchListRow } from '../types/gymSearch';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
-import { isInsideKorea } from '../utils/location';
+import { isInsideKorea } from '../utils';
 import { useStore } from '../store';
 
 const useStyles = makeStyles(theme => ({

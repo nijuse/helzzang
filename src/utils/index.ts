@@ -23,6 +23,20 @@ export const formatRelativeTime = (createdAt: string): string => {
   return `${diffWeeks}주 전`;
 };
 
+const KOREA_BOUNDS = {
+  minLat: 33.0,
+  maxLat: 39.0,
+  minLng: 124.0,
+  maxLng: 132.0,
+} as const;
+
+/** 위·경도가 한국 영역(대략적 경계) 안인지 여부 */
+export const isInsideKorea = (lat: number, lng: number): boolean =>
+  lat >= KOREA_BOUNDS.minLat &&
+  lat <= KOREA_BOUNDS.maxLat &&
+  lng >= KOREA_BOUNDS.minLng &&
+  lng <= KOREA_BOUNDS.maxLng;
+
 export type MapUrlOptions = {
   lat: string | undefined;
   lng: string | undefined;

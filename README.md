@@ -21,7 +21,60 @@
 
 ---
 
-## 2. 주요 기능
+## 2. 프로젝트 구조 / 설계
+
+### 2-1. 아키텍처 개요
+
+| 구분         | 용도                                    |
+| ------------ | --------------------------------------- |
+| 운동닥터 API | 위치 기준 주변 헬스장 검색              |
+| Supabase     | Google OAuth, 커뮤니티 게시글·댓글 저장 |
+| Groq API     | 주변 헬스장 기반 AI 추천                |
+
+```mermaid
+flowchart TB
+  subgraph app["앱 (React Native)"]
+    A["App.tsx (Theme · QueryClient · Navigation · OAuth 딥링크)"]
+    B[RootNavigator]
+    C[Screens]
+    D["Hooks + TanStack Query"]
+    E["Zustand (위치 · gymList)"]
+    A --> B --> C
+    C --> D
+    C --> E
+  end
+  WD[(운동닥터 API)]
+  SB[(Supabase)]
+  GQ[(Groq API)]
+  D --> WD
+  D --> SB
+  D --> GQ
+```
+
+### 2-2. 디렉터리 구조
+
+```
+helzzang/
+├── App.tsx              # 진입: ThemeProvider, QueryClientProvider, NavigationContainer
+├── themed.ts            # React Native Elements UI 테마·색상
+├── index.js             # Metro 번들 진입점
+├── assets/              # 이미지·폰트 등
+├── android/ , ios/      # 네이티브 프로젝트
+└── src/
+    ├── navigation/      # 스택 네비게이션
+    ├── screens/         # 페이지 컴포넌트
+    ├── components/      # 공통 컴포넌트
+    ├── hooks/           # 커스텀 훅
+    ├── lib/             # Supabase 클라이언트, OAuth 콜백
+    ├── store/           # Zustand 전역 스토어
+    ├── types/           # API·도메인 타입
+    ├── utils/           # 유틸리티 함수
+    └── constants/       # 기본 위치 등 상수
+```
+
+---
+
+## 3. 주요 기능
 
 - **주변 헬스장 탐색**
 
@@ -49,30 +102,30 @@
 
 ---
 
-## 3. 스크린샷
+## 4. 스크린샷
 
-### 3-1. 헬스장 목록 화면
+### 4-1. 헬스장 목록 화면
 
 <img src="./assets/images/readme/readme_home.png" alt="Gym List Screen" width="320" />
 
-### 3-2. 헬스장 상세 화면
+### 4-2. 헬스장 상세 화면
 
 <img src="./assets/images/readme/readme_gym_detail.png" alt="Gym Detail Screen" width="320" />
 
-### 3-3. 내 주변 AI 추천 헬스장 화면
+### 4-3. 내 주변 AI 추천 헬스장 화면
 
 <img src="./assets/images/readme/readme_ai.png" alt="AI Comparison Screen" width="320" />
 
-### 3-4. 헬스장 가격 정보 목록
+### 4-4. 헬스장 가격 정보 목록
 
 <img src="./assets/images/readme/readme_membership.png" alt="Gym Detail Screen (membership)" width="320" />
 <img src="./assets/images/readme/readme_female.png" alt="Gym Detail Screen (female)" width="320" />
 
-### 3-5. 커뮤니티 목록 화면
+### 4-5. 커뮤니티 목록 화면
 
 <img src="./assets/images/readme/readme_community.png" alt="Community Screen" width="320" />
 
-### 3-6. 커뮤니티 글쓰기 & 댓글
+### 4-6. 커뮤니티 글쓰기 & 댓글
 
 <img src="./assets/images/readme/readme_post.png" alt="Community Write Screen" width="320" />
 <img src="./assets/images/readme/readme_post_comment.png" alt="Community Comment Screen" width="320" />
@@ -80,7 +133,7 @@
 
 ---
 
-## 4. 사전 요구사항
+## 5. 사전 요구사항
 
 이 프로젝트를 로컬에서 실행하기 위해서는 다음 환경이 필요합니다.
 
@@ -115,16 +168,16 @@
 
 ---
 
-## 5. 설치 및 실행 방법
+## 6. 설치 및 실행 방법
 
-### 5-1. 의존성 설치
+### 6-1. 의존성 설치
 
 ```sh
 # 패키지 설치 (bun)
 bun install
 ```
 
-### 5-2. 환경 변수 설정
+### 6-2. 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고, Supabase 관련 키와 Google Client Secret 키를 설정합니다.
 
@@ -134,19 +187,19 @@ SUPABASE_ANON_KEY=...
 GOOGLE_CLIENT_SECRET=...
 ```
 
-### 5-3. Metro 번들러 실행
+### 6-3. Metro 번들러 실행
 
 ```sh
 bun start
 ```
 
-### 5-4. Android 실행
+### 6-4. Android 실행
 
 ```sh
 bun run android
 ```
 
-### 5-5. iOS 실행 (macOS)
+### 6-5. iOS 실행 (macOS)
 
 처음 설정 시 혹은 네이티브 의존성 변경 시:
 
@@ -165,7 +218,7 @@ bun run ios
 
 ---
 
-## 6. 사용 방법
+## 7. 사용 방법
 
 1. **앱 실행 후 권한 허용**
 
@@ -192,12 +245,12 @@ bun run ios
 
 ---
 
-## 7. 자주 발생할 수 있는 문제 & 해결 방법
+## 8. 자주 발생할 수 있는 문제 & 해결 방법
 
 - **빌드/실행 시 네트워크 관련 에러**
 
   - `.env` 파일에 Supabase 관련 환경 변수가 제대로 설정되어 있는지 확인합니다.
-  - Android 에뮬레이터/실기기에서 네트워크 권한이 허용되어 있는지 확인합니다.
+  - 에뮬레이터/실기기에서 네트워크 권한이 허용되어 있는지 확인합니다.
 
 - **커뮤니티 글/댓글 작성이 되지 않는 경우**
   - Google 로그인이 완료되었는지 확인합니다.
