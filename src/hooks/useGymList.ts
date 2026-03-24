@@ -1,7 +1,7 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import axios from 'axios';
 import { Location } from 'react-native-get-location';
-import type { GymSearchResult } from '../types/gymSearch';
+import type { GymSearchResult } from '@/types/gymSearch';
 
 /**
  * 헬스장 목록 조회 (TanStack Query 캐싱)

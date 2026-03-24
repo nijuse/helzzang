@@ -8,13 +8,13 @@ import {
   Linking,
 } from 'react-native';
 import { Button } from '@rneui/themed';
-import useGymList from '../hooks/useGymList';
-import { useStore } from '../store';
+import useGymList from '@/hooks/useGymList';
+import { useStore } from '@/store';
 import { colors } from '../../themed';
 import {
   AIRecommendationResult,
   useAIRecommendation,
-} from '../hooks/useAIRecommendation';
+} from '@/hooks/useAIRecommendation';
 
 /**
  * 참고: Groq API(api.groq.com)는 OpenAI 호환 형식을 사용합니다.

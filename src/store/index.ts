@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Location } from 'react-native-get-location';
-import { DEFAULT_LOCATION } from '../constants';
-import type { GymSearchResult } from '../types/gymSearch';
+import { DEFAULT_LOCATION } from '@/constants';
+import type { GymSearchResult } from '@/types/gymSearch';
 
 interface StoreState {
   location: Location | null;

@@ -21,9 +21,9 @@ import {
 } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import theme from './themed';
-import RootNavigator from './src/navigation/RootNavigator';
-import type { RootStackParamList } from './src/navigation/RootNavigator';
-import { handleAuthCallbackUrl } from './src/lib/authCallback';
+import RootNavigator from '@/navigation/RootNavigator';
+import type { RootStackParamList } from '@/navigation/RootNavigator';
+import { handleAuthCallbackUrl } from '@/lib/authCallback';
 
 const queryClient = new QueryClient({
   defaultOptions: {

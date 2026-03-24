@@ -10,11 +10,11 @@ import {
 } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
-import type { RootStackParamList } from '../navigation/RootNavigator';
-import useGymDetail from '../hooks/useGymDetail';
+import type { RootStackParamList } from '@/navigation/RootNavigator';
+import useGymDetail from '@/hooks/useGymDetail';
 import { makeStyles } from '@rneui/themed';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { buildNaverMapUrl } from '../utils';
+import { buildNaverMapUrl } from '@/utils';
 
 const { width: WINDOW_WIDTH } = Dimensions.get('window');
 

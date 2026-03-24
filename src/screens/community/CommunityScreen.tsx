@@ -8,13 +8,13 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigation/RootNavigator';
-import { supabase } from '../../lib/supabase';
+import { RootStackParamList } from '@/navigation/RootNavigator';
+import { supabase } from '@/lib/supabase';
 import { makeStyles } from '@rneui/themed';
-import CommunityItem from '../../components/CommunityItem';
+import CommunityItem from '@/components/CommunityItem';
 import useCommunityPosts, {
   type CommunityPost,
-} from '../../hooks/useCommunityPosts';
+} from '@/hooks/useCommunityPosts';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {

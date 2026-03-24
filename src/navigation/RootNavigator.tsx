@@ -7,15 +7,15 @@ import {
 import { StyleSheet, Image, Pressable } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import HomeScreen from '../screens/HomeScreen';
-import GymListScreen from '../screens/GymListScreen';
-import AIComparisonScreen from '../screens/AIRecommendationScreen';
-import CommunityScreen from '../screens/community/CommunityScreen';
-import SignInScreen from '../screens/SignInScreen';
-import CommunityWriteScreen from '../screens/community/CommunityWriteScreen';
-import CommunityDetailScreen from '../screens/community/CommunityDetailScreen';
-import CommunityCommentEditScreen from '../screens/community/CommunityCommentEditScreen';
-import GymDetailScreen from '../screens/GymDetailScreen';
+import HomeScreen from '@/screens/HomeScreen';
+import GymListScreen from '@/screens/GymListScreen';
+import AIComparisonScreen from '@/screens/AIRecommendationScreen';
+import CommunityScreen from '@/screens/community/CommunityScreen';
+import SignInScreen from '@/screens/SignInScreen';
+import CommunityWriteScreen from '@/screens/community/CommunityWriteScreen';
+import CommunityDetailScreen from '@/screens/community/CommunityDetailScreen';
+import CommunityCommentEditScreen from '@/screens/community/CommunityCommentEditScreen';
+import GymDetailScreen from '@/screens/GymDetailScreen';
 
 import { colors } from '../../themed';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';

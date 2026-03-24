@@ -3,9 +3,9 @@ import { View, Linking, AppState, AppStateStatus, Text } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button, makeStyles } from '@rneui/themed';
-import { supabase } from '../lib/supabase';
-import { handleAuthCallbackUrl } from '../lib/authCallback';
-import type { RootStackParamList } from '../navigation/RootNavigator';
+import { supabase } from '@/lib/supabase';
+import { handleAuthCallbackUrl } from '@/lib/authCallback';
+import type { RootStackParamList } from '@/navigation/RootNavigator';
 
 /**
  * OAuth 콜백 URL (Supabase 대시보드 > Authentication > URL Configuration 에

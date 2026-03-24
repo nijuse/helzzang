@@ -8,11 +8,11 @@ import {
 import { Input, makeStyles, Button } from '@rneui/themed';
 import { useEffect, useState } from 'react';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../../navigation/RootNavigator';
-import { useCommunityPost } from '../../hooks/useCommunityPosts';
-import useCreateCommunityPost from '../../hooks/useCreateCommunityPost';
-import useUpdateCommunityPost from '../../hooks/useUpdateCommunityPost';
-import useSupabaseAuth from '../../hooks/useSupabaseAuth';
+import { RootStackParamList } from '@/navigation/RootNavigator';
+import { useCommunityPost } from '@/hooks/useCommunityPosts';
+import useCreateCommunityPost from '@/hooks/useCreateCommunityPost';
+import useUpdateCommunityPost from '@/hooks/useUpdateCommunityPost';
+import useSupabaseAuth from '@/hooks/useSupabaseAuth';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {

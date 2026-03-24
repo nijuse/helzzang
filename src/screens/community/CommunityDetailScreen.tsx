@@ -11,15 +11,15 @@ import {
 import { Input, makeStyles } from '@rneui/themed';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCommunityPost } from '../../hooks/useCommunityPosts';
-import { formatRelativeTime } from '../../utils';
-import { RootStackParamList } from '../../navigation/RootNavigator';
+import { useCommunityPost } from '@/hooks/useCommunityPosts';
+import { formatRelativeTime } from '@/utils';
+import { RootStackParamList } from '@/navigation/RootNavigator';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useCallback, useEffect, useState, useLayoutEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import useCommunityComments from '../../hooks/useCommunityComments';
-import useSupabaseAuth from '../../hooks/useSupabaseAuth';
+import useCommunityComments from '@/hooks/useCommunityComments';
+import useSupabaseAuth from '@/hooks/useSupabaseAuth';
 
 type CommunityDetailScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,

@@ -8,9 +8,9 @@ import {
 import { makeStyles, Button } from '@rneui/themed';
 import { useEffect, useState } from 'react';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../../navigation/RootNavigator';
-import { useCommunityComment } from '../../hooks/useCommunityComments';
-import useUpdateComment from '../../hooks/useUpdateComment';
+import { RootStackParamList } from '@/navigation/RootNavigator';
+import { useCommunityComment } from '@/hooks/useCommunityComments';
+import useUpdateComment from '@/hooks/useUpdateComment';
 import { useQueryClient } from '@tanstack/react-query';
 
 const useStyles = makeStyles(theme => ({

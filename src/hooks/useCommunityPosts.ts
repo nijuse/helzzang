@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 /** 커뮤니티 게시글 (DB community 테이블 기준) */
 export type CommunityPost = {

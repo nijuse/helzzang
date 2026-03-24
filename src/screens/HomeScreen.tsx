@@ -9,13 +9,13 @@ import {
 } from 'react-native';
 import { useEffect, useState } from 'react';
 import GetLocation from 'react-native-get-location';
-import useGymList from '../hooks/useGymList';
-import type { GymSearchListRow } from '../types/gymSearch';
+import useGymList from '@/hooks/useGymList';
+import type { GymSearchListRow } from '@/types/gymSearch';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/RootNavigator';
-import { isInsideKorea } from '../utils';
-import { useStore } from '../store';
+import { RootStackParamList } from '@/navigation/RootNavigator';
+import { isInsideKorea } from '@/utils';
+import { useStore } from '@/store';
 
 const useStyles = makeStyles(theme => ({
   container: {

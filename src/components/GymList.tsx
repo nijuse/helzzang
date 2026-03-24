@@ -1,10 +1,10 @@
 import { Image, View, Text, Pressable } from 'react-native';
 import { makeStyles } from '@rneui/themed';
-import { FILTERS } from '../constants';
+import { FILTERS } from '@/constants';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/RootNavigator';
-import type { GymListRowData, WoondocPriceEntry } from '../types/gymSearch';
+import { RootStackParamList } from '@/navigation/RootNavigator';
+import type { GymListRowData, WoondocPriceEntry } from '@/types/gymSearch';
 
 const useStyles = makeStyles(theme => ({
   container: {

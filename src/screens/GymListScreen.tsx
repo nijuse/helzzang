@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
 import { makeStyles } from '@rneui/themed';
-import useGymList from '../hooks/useGymList';
-import GymList from '../components/GymList';
-import { useStore } from '../store';
-import { FILTERS } from '../constants';
+import useGymList from '@/hooks/useGymList';
+import GymList from '@/components/GymList';
+import { useStore } from '@/store';
+import { FILTERS } from '@/constants';
 import Dropdown from 'react-native-input-select';
 import { colors } from '../../themed';
 import type {
   GymListRowData,
   GymSearchResult,
   WoondocPriceEntry,
-} from '../types/gymSearch';
+} from '@/types/gymSearch';
 
 const useStyles = makeStyles(theme => ({
   container: {

@@ -21,6 +21,16 @@ module.exports = {
         ],
       },
     ],
+    [
+      'module-resolver',
+      {
+        root: [path.resolve(__dirname)],
+        alias: {
+          '@': path.resolve(__dirname, 'src'),
+        },
+        extensions: ['.ios.js', '.android.js', '.js', '.jsx', '.ts', '.tsx', '.json'],
+      },
+    ],
     // Reanimated 4 worklet 변환용 - 반드시 plugins 배열의 마지막에 위치
     'react-native-worklets/plugin',
   ],

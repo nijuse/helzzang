@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 /** 커뮤니티 댓글 (DB community_comments 테이블 기준, users 조인으로 userName 포함) */
 export type CommunityComment = {
