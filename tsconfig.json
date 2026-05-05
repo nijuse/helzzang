@@ -8,6 +8,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", "env.d.ts"],
-  "exclude": ["**/node_modules", "**/Pods"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "env.d.ts"],
+  "exclude": ["**/node_modules", "**/Pods", "apps/**"]
 }

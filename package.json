@@ -2,13 +2,19 @@
   "name": "helzzang",
   "version": "0.0.1",
   "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
     "start:device": "react-native start --host 0.0.0.0",
-    "test": "jest"
+    "test": "jest",
+    "web": "npm --prefix apps/web run dev",
+    "web:build": "npm --prefix apps/web run build",
+    "web:preview": "npm --prefix apps/web run preview"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
